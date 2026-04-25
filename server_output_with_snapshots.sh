@@ -14,6 +14,7 @@ Status: 200
     "last-column-id": 4,
     "current-schema-id": 0,
     "schemas": [
+      # shellcheck disable=SC1073
       {
         "type": "struct",
         "schema-id": 0,

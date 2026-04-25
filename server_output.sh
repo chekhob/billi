@@ -61,7 +61,7 @@ GET /v1/namespaces/prod/tables/gamma?snapshots=all
 
 === Frame 37 ===
 
-← RESPONSE to REST Catalog
+← RESPONSE from REST Catalog
 /v1/namespaces/prod/tables/gamma?snapshots=all
 Status: 404
 {
@@ -405,7 +405,7 @@ Status: 200
       "fields": []
     }
   ],
-  "last-partition-id": 999,
+   "last-partition-id": 999,
   "default-sort-order-id": 0,
   "sort-orders": [
     {
