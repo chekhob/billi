@@ -1,16 +1,21 @@
-package org.acme;
+package org.acme.dto;
 
-import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import java.util.List;
 import java.util.Map;
 
-public class NamespaceObject extends PanacheMongoEntity {
+public class NamespaceResponse {
 
     private List<String> namespace;
-    private String idempotent_key;
     private Map<String, String> properties;
 
-    public NamespaceObject() {
+    public NamespaceResponse() {}
+
+    public NamespaceResponse(
+        List<String> namespace,
+        Map<String, String> properties
+    ) {
+        this.namespace = namespace;
+        this.properties = properties;
     }
 
     public List<String> getNamespace() {
@@ -19,14 +24,6 @@ public class NamespaceObject extends PanacheMongoEntity {
 
     public void setNamespace(List<String> namespace) {
         this.namespace = namespace;
-    }
-
-    public String getIdempotentKey() {
-        return idempotent_key;
-    }
-
-    public void setIdempotentKey(String idempotent_key) {
-        this.idempotent_key = idempotent_key;
     }
 
     public Map<String, String> getProperties() {

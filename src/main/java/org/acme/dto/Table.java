@@ -1,6 +1,7 @@
-package org.acme;
+package org.acme.dto;
 
 public class Table {
+
     String name;
     String location;
 
@@ -9,4 +10,3 @@ public class Table {
     String metadata_location;
     TableMetadata metadata;
 }
-

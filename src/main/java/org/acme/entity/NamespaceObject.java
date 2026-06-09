@@ -1,16 +1,18 @@
-package org.acme;
+package org.acme.entity;
 
+import io.quarkus.mongodb.panache.PanacheMongoEntity;
+import io.quarkus.mongodb.panache.common.MongoEntity;
 import java.util.List;
 import java.util.Map;
 
-public class CreateNamespaceRequest {
+@MongoEntity(collection = "namespaces")
+public class NamespaceObject extends PanacheMongoEntity {
+
     private List<String> namespace;
+    private String idempotent_key;
     private Map<String, String> properties;
 
-    public CreateNamespaceRequest(List<String> namespace, Map<String, String> properties) {
-        this.namespace=namespace;
-        this.properties=properties;
-    }
+    public NamespaceObject() {}
 
     public List<String> getNamespace() {
         return namespace;
@@ -18,6 +20,14 @@ public class CreateNamespaceRequest {
 
     public void setNamespace(List<String> namespace) {
         this.namespace = namespace;
+    }
+
+    public String getIdempotentKey() {
+        return idempotent_key;
+    }
+
+    public void setIdempotentKey(String idempotent_key) {
+        this.idempotent_key = idempotent_key;
     }
 
     public Map<String, String> getProperties() {

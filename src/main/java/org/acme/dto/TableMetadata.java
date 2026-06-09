@@ -1,6 +1,7 @@
-package org.acme;
+package org.acme.dto;
 
 public class TableMetadata {
+
     int format_version;
     String table_uuid;
     String location;

@@ -1,14 +1,14 @@
-package org.acme;
+package org.acme.dto;
 
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 public class FileObject {
+
     private String objectKey;
 
     private Long size;
 
-    public FileObject() {
-    }
+    public FileObject() {}
 
     public static FileObject from(S3Object s3Object) {
         FileObject file = new FileObject();

@@ -1,13 +1,17 @@
-package org.acme;
+package org.acme.apidef;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
 import java.util.Arrays;
 import java.util.List;
-
+import org.acme.dto.CreateNamespaceRequest;
+import org.acme.dto.ErrorResponse;
+import org.acme.dto.NamespaceResponse;
+import org.acme.entity.NamespaceEntityService;
+import org.acme.entity.NamespaceObject;
+import org.acme.services.MetadataRequests;
 import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 
 //class Namespace {
@@ -23,8 +27,6 @@ public class Namespaces {
 
     @Inject
     NamespaceEntityService namespaceEntityService;
-
-    //    private Hashtable<String, Namespace> namespaces_list = new Hashtable();
 
     @ServerExceptionMapper
     public Response mapException(noSuchNamespaceException e) {
@@ -81,14 +83,19 @@ public class Namespaces {
     }
 
     @POST
-    public Response createNewNamespace(CreateNamespaceRequest namespaceRequest) {
+    public Response createNewNamespace(
+        CreateNamespaceRequest namespaceRequest
+    ) {
         NamespaceObject entity = new NamespaceObject();
         entity.setNamespace(namespaceRequest.getNamespace());
         entity.setProperties(namespaceRequest.getProperties());
-        
+
         NamespaceObject saved = namespaceEntityService.createNamespace(entity);
-        
-        NamespaceResponse response = new NamespaceResponse(saved.getNamespace(), saved.getProperties());
+
+        NamespaceResponse response = new NamespaceResponse(
+            saved.getNamespace(),
+            saved.getProperties()
+        );
         return Response.ok().entity(response).build();
     }
 
@@ -99,7 +106,8 @@ public class Namespaces {
         @PathParam("ns_name") String namespace
     ) {
         List<String> namespaceList = List.of(namespace);
-        NamespaceObject namespaceDetails = namespaceEntityService.findByNamespace(namespaceList);
+        NamespaceObject namespaceDetails =
+            namespaceEntityService.findByNamespace(namespaceList);
 
         if (namespaceDetails != null) {
             NamespaceResponse response = new NamespaceResponse(

@@ -1,16 +1,17 @@
-package org.acme;
+package org.acme.dto;
 
 import java.util.List;
 import java.util.Map;
 
-public class NamespaceResponse {
+public class CreateNamespaceRequest {
+
     private List<String> namespace;
     private Map<String, String> properties;
 
-    public NamespaceResponse() {
-    }
-
-    public NamespaceResponse(List<String> namespace, Map<String, String> properties) {
+    public CreateNamespaceRequest(
+        List<String> namespace,
+        Map<String, String> properties
+    ) {
         this.namespace = namespace;
         this.properties = properties;
     }

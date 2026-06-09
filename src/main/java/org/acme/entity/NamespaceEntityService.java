@@ -1,17 +1,18 @@
-package org.acme;
+package org.acme.entity;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.transaction.Transactional;
-import org.bson.types.ObjectId;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.util.List;
 import java.util.Map;
+import org.bson.types.ObjectId;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @RequestScoped
 public class NamespaceEntityService {
 
     @ConfigProperty(name = "bucket.name")
     String bucket;
+
     @Transactional
     public NamespaceObject getNamespaceEntityDetails(String namespaceId) {
         ObjectId ns_id = new ObjectId(namespaceId);
