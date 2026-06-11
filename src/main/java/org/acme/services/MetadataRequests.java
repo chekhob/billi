@@ -28,6 +28,12 @@ public class MetadataRequests extends S3Connector {
     @Inject
     S3Client s3;
 
+    public Response createNewNamespaceFolder(String folderName) {
+        Response.ResponseBuilder response = Response.ok();
+
+        return response.build();
+    }
+
     //    @GET
     //    @Path("download/{objectKey}")
     //    @Produces(MediaType.APPLICATION_OCTET_STREAM)

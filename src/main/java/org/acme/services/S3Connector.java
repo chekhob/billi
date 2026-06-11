@@ -9,14 +9,14 @@ public abstract class S3Connector {
     @ConfigProperty(name = "bucket.name")
     String bucketName;
 
-    // We are not uploading anything from here I think?
-    //    protected PutObjectRequest buildPutRequest(FormData formData) {
-    //        return PutObjectRequest.builder()
-    //                .bucket(bucketName)
-    //                .key(formData.filename)
-    //                .contentType(formData.mimetype)
-    //                .build();
-    //    }
+    // TODO: Fix this stupid method
+    // protected PutObjectRequest buildPutRequest(FormData formData) {
+    //     return PutObjectRequest.builder()
+    //         .bucket(bucketName)
+    //         .key(formData.filename)
+    //         .contentType(formData.mimetype)
+    //         .build();
+    // }
 
     protected GetObjectRequest buildGetRequest(String objectKey) {
         return GetObjectRequest.builder()
@@ -25,3 +25,5 @@ public abstract class S3Connector {
             .build();
     }
 }
+
+class FormData {}

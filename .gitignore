@@ -41,12 +41,9 @@ nb-configuration.xml
 application.properties
 */application.properties
 src/main/resources
+.backblaze_key
+
 # Plugin directory
 /.quarkus/cli/plugins/
 # TLS Certificates
 .certs/
-
-<<<<<<< Updated upstream
-=======
-src/main/resources/
->>>>>>> Stashed changes

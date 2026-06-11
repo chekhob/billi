@@ -1,14 +1,19 @@
 package org.acme.entity;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
+import org.acme.services.MetadataRequests;
 import org.bson.types.ObjectId;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @RequestScoped
 public class NamespaceEntityService {
+
+    @Inject
+    MetadataRequests metadataRequests;
 
     @ConfigProperty(name = "bucket.name")
     String bucket;

@@ -120,6 +120,8 @@ public class Namespaces {
         }
     }
 
+    //TODO: Create & Read are working above, have to add Update for Properties and Delete
+
     @Path("/{ns_name}/tables")
     @GET
     public Response getTableList(@PathParam("ns_name") String namespace) {
