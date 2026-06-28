@@ -47,3 +47,10 @@ src/main/resources
 /.quarkus/cli/plugins/
 # TLS Certificates
 .certs/
+
+#opencode
+.agent.md
+
+#spec folder
+spec
+spec/*

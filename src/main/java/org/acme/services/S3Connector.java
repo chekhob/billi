@@ -10,13 +10,13 @@ public abstract class S3Connector {
     String bucketName;
 
     // TODO: Fix this stupid method
-    // protected PutObjectRequest buildPutRequest(FormData formData) {
-    //     return PutObjectRequest.builder()
-    //         .bucket(bucketName)
-    //         .key(formData.filename)
-    //         .contentType(formData.mimetype)
-    //         .build();
-    // }
+    protected PutObjectRequest buildPutRequest(S3FormData formData) {
+        return PutObjectRequest.builder()
+            .bucket(bucketName)
+            .key(formData.filename)
+            .contentType(formData.mimetype)
+            .build();
+    }
 
     protected GetObjectRequest buildGetRequest(String objectKey) {
         return GetObjectRequest.builder()
@@ -26,4 +26,4 @@ public abstract class S3Connector {
     }
 }
 
-class FormData {}
+class S3FormData {}

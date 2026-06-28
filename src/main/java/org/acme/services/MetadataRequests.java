@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.acme.dto.FileObject;
+import org.acme.dto.IcebergMetadata;
 import org.jboss.logging.Logger;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -29,6 +30,15 @@ public class MetadataRequests extends S3Connector {
     S3Client s3;
 
     public Response createNewNamespaceFolder(String folderName) {
+        Response.ResponseBuilder response = Response.ok();
+
+        return response.build();
+    }
+
+    public Response uploadMetadataFile(String folderName, IcebergMetadata ){
+
+
+
         Response.ResponseBuilder response = Response.ok();
 
         return response.build();

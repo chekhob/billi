@@ -19,14 +19,17 @@ import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 //    String location;
 //    ArrayList<Table> tableList;
 //}
-@Path("namespaces")
-public class Namespaces {
+@Path("/namespaces")
+public class NamespaceResources {
 
     @Inject
     MetadataRequests metadataRequests;
 
     @Inject
     NamespaceEntityService namespaceEntityService;
+
+    @Inject
+    TablesResource tablesResource;
 
     @ServerExceptionMapper
     public Response mapException(noSuchNamespaceException e) {
@@ -36,25 +39,6 @@ public class Namespaces {
                 new ErrorResponse(
                     "Namespace does not exist",
                     e.element +
-                        ": " +
-                        e.getMessage() +
-                        "\n" +
-                        Arrays.toString(e.getStackTrace())
-                )
-            )
-            .build();
-    }
-
-    @ServerExceptionMapper
-    public Response mapException(noSuchTableException e) {
-        return Response.status(e.code.getStatusCode())
-            .type(MediaType.APPLICATION_JSON)
-            .entity(
-                new ErrorResponse(
-                    "Table does not exist",
-                    e.namespace +
-                        "." +
-                        e.element +
                         ": " +
                         e.getMessage() +
                         "\n" +
@@ -123,29 +107,9 @@ public class Namespaces {
     //TODO: Create & Read are working above, have to add Update for Properties and Delete
 
     @Path("/{ns_name}/tables")
-    @GET
-    public Response getTableList(@PathParam("ns_name") String namespace) {
-        // TODO: Ideally call helper function from Tables class instead
-
-        return Response.ok().build();
+    public TablesResource tables() {
+        return tablesResource;
     }
-
-    //    @Path("/{ns_name}/tables/{tb_name}")
-    //    @GET
-    //    @Produces(MediaType.APPLICATION_JSON)
-    //    public Response getTableDetails(@PathParam("ns_name") String namespace, @PathParam("tb_name") String table){
-    //        Namespace object = namespaces_list.get(namespace);
-    //
-    ////        if (object != null && object.tableList != null && object.tableList.contains(table)) {
-    //        try {
-    //            List<FileObject> metadata = metadataRequests.getMetadata(namespace, table);
-    //            return Response.ok(metadata).build();
-    //        } catch (Exception e){
-    //            e.fillInStackTrace();
-    ////            noSuchTableException e = new noSuchTableException(table, namespace);
-    //            throw e;
-    //        }
-    //    }
 
     @Path("/mongodb/{ns_name}/{tb_name}")
     @GET
@@ -153,6 +117,7 @@ public class Namespaces {
         @PathParam("ns_name") String namespace,
         @PathParam("tb_name") String table
     ) {
+        // TODO: Add a mongo or db function from here
         return Response.ok().build();
     }
 }
