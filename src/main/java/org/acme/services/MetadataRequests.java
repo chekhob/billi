@@ -1,22 +1,28 @@
 package org.acme.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.smallrye.mutiny.Uni;
+import jakarta.activation.MimeType;
+import jakarta.activation.MimeTypeParseException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.inject.Scope;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import org.acme.dto.FileObject;
 import org.acme.dto.IcebergMetadata;
+import org.acme.dto.S3FormData;
 import org.jboss.logging.Logger;
 import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -35,13 +41,29 @@ public class MetadataRequests extends S3Connector {
         return response.build();
     }
 
-    public Response uploadMetadataFile(String folderName, IcebergMetadata ){
+    public PutObjectResponse uploadMetadataFile(
+        String folderName,
+        IcebergMetadata icebergMetadata
+    ) {
+        S3FormData formData = new S3FormData();
+        formData.filename = "Test-file";
+        try {
+            formData.mimetype = new MimeType("application/json");
+        } catch (MimeTypeParseException e) {
+            System.err.println(e.fillInStackTrace());
+        }
 
-
-
-        Response.ResponseBuilder response = Response.ok();
-
-        return response.build();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            formData.json = mapper.writeValueAsString(icebergMetadata);
+        } catch (JsonProcessingException e) {
+            System.err.println(e.fillInStackTrace());
+        }
+        PutObjectResponse putObjectResponse = s3.putObject(
+            buildPutRequest(formData),
+            RequestBody.fromString(formData.json)
+        );
+        return putObjectResponse;
     }
 
     //    @GET

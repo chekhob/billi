@@ -9,9 +9,9 @@ import java.util.List;
 import org.acme.dto.CreateNamespaceRequest;
 import org.acme.dto.ErrorResponse;
 import org.acme.dto.NamespaceResponse;
-import org.acme.entity.NamespaceEntityService;
 import org.acme.entity.NamespaceObject;
 import org.acme.services.MetadataRequests;
+import org.acme.services.NamespaceEntityService;
 import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 
 //class Namespace {

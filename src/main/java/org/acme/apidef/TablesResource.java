@@ -3,6 +3,7 @@ package org.acme.apidef;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.logging.Log;
+import jakarta.activation.MimeType;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -13,35 +14,39 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
-
+import jakarta.ws.rs.core.Response.Status;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
 import org.acme.dto.CreateTableRequest;
 import org.acme.dto.ErrorResponse;
 import org.acme.dto.IcebergMetadata;
-import org.acme.dto.SchemaField;
-import org.acme.dto.SortOrder;
-import org.acme.dto.SortOrderField;
+import org.acme.dto.S3FormData;
+import org.acme.services.MetadataRequests;
+import org.acme.services.TablesServices;
+
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 
 @Path("/tables")
-public class TablesResource
+public class TablesResource {
 
     @Inject
     ObjectMapper objectMapper;
 
-    @ConfigProperty(name = "iceberg.format.version")
-    Integer FORMAT_VERSION_ICEBERG;
-    @ConfigProperty(name="iceberg.initial.spec-id")
-    Integer INITIAL_SPEC_ID;
+    @Inject
+    TablesServices tablesServices;
 
+    @Inject
+    MetadataRequests metadataRequests;
 
     private static final Logger LOG = Logger.getLogger(TablesResource.class);
     private static Integer newTableSequenceNumber = 0;
-    private static Integer LAST_PARITION_ID=1000;
+    private static Integer LAST_PARITION_ID = 1000;
+
     // TODO: dont really understand what this means have to understand more of the spec or flow to get this
 
     @ServerExceptionMapper
@@ -76,63 +81,31 @@ public class TablesResource
         @PathParam("ns_name") String namespace,
         CreateTableRequest createTableRequest
     ) {
-        // 1. First see if the intercepted request is coming properly
         try {
             LOG.info("@POST Create Table Request:");
             LOG.info(objectMapper.writeValueAsString(createTableRequest));
         } catch (JsonProcessingException e) {
+            if (e.getClass() == JsonProcessingException.class) {
+                LOG.error("TRUE \n\n\n TRUE");
+            }
             LOG.error(e);
         }
 
-        // 2. Compare which fields are to be added
-        //
-        // TODO: check the location of the namespace from DB.
-        // getNamespace(namespace);
-
-
-        String namespaceLocation =
-            "s3://warehouse/" + namespace + '/' + createTableRequest.getName();
-        Integer lastColumnId = createTableRequest.getSchema().getFields().length - 1;
-
-        SortOrderField[] sortOrderFields;
-        SortOrder sortOrder = new SortOrder(0, sortOrderFields);
-        SortOrder[] sortOrderList = {sortOrder};
-        // Why are we doing this, just a counting quirk?
-        SchemaField [] fields = createTableRequest.getSchema().getFields();
-        for(SchemaField temp: fields){
-            temp.setId(temp.getId()+1);
-        }
-
-        IcebergMetadata metadata = new IcebergMetadata(
-            FORMAT_VERSION_ICEBERG,
-            java.util.UUID.randomUUID(),
-            newTableSequenceNumber,
-            System.currentTimeMillis(),
-            lastColumnId,
-            namespaceLocation,
-            createTableRequest.getSchema(),
-            createTableRequest.getPartitionSpec(),
-            LAST_PARITION_ID,
-            INITIAL_SPEC_ID,
-            sortOrder.getOrderId(),
-            sortOrderList,
-            createTableRequest.getWriteOrder(),
-            createTableRequest.getProperties(),
-            createTableRequest.getStageCreate()
+        IcebergMetadata metadata = tablesServices.createMetadataJSON(
+            namespace,
+            createTableRequest
         );
 
-
-        // 3. Move the logic to a service file
-
+        PutObjectResponse putObjectResponse = metadataRequests.uploadMetadataFile("folder", metadata);
 
 
-        // 4. Transform or cast to Table MetaData -- done -- log objects are still pending
+        if (putObjectResponse != null) {
+            return Response.ok().status(Status.CREATED).build();
+        }
 
-        // 5. PUT into S3
-
-
+        return Response.serverError().build();
         // 6. Make a GET to same URL and return the Table MetaData
-        return Response.ok().build();
+        // return Response.ok().build();
     }
 
     // @Path("{tb_name}")

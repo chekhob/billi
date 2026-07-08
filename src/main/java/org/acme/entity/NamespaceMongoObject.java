@@ -1,0 +1,40 @@
+package org.acme.entity;
+
+import io.quarkus.mongodb.panache.PanacheMongoEntity;
+import io.quarkus.mongodb.panache.common.MongoEntity;
+import java.util.List;
+import java.util.Map;
+
+@MongoEntity(collection = "namespaces")
+public class NamespaceMongoObject extends PanacheMongoEntity {
+
+    private List<String> namespace;
+    private String idempotent_key;
+    private Map<String, String> properties;
+
+    public NamespaceMongoObject() {}
+
+    public List<String> getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(List<String> namespace) {
+        this.namespace = namespace;
+    }
+
+    public String getIdempotentKey() {
+        return idempotent_key;
+    }
+
+    public void setIdempotentKey(String idempotent_key) {
+        this.idempotent_key = idempotent_key;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+}

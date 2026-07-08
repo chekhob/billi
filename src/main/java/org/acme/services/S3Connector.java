@@ -1,5 +1,7 @@
 package org.acme.services;
 
+import io.vertx.core.json.Json;
+import org.acme.dto.S3FormData;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -14,7 +16,7 @@ public abstract class S3Connector {
         return PutObjectRequest.builder()
             .bucket(bucketName)
             .key(formData.filename)
-            .contentType(formData.mimetype)
+            .contentType(formData.mimetype.toString())
             .build();
     }
 
@@ -25,5 +27,3 @@ public abstract class S3Connector {
             .build();
     }
 }
-
-class S3FormData {}

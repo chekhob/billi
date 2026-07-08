@@ -1,12 +1,13 @@
-package org.acme.entity;
+package org.acme.services;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
-import org.acme.services.MetadataRequests;
-import org.bson.types.ObjectId;
+import java.util.UUID;
+import org.acme.entity.NamespaceObject;
+import org.acme.repo.NamespaceRepository;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @RequestScoped
@@ -15,19 +16,25 @@ public class NamespaceEntityService {
     @Inject
     MetadataRequests metadataRequests;
 
+    @Inject
+    NamespaceRepository namespaceRepository;
+
     @ConfigProperty(name = "bucket.name")
     String bucket;
 
     @Transactional
-    public NamespaceObject getNamespaceEntityDetails(String namespaceId) {
-        ObjectId ns_id = new ObjectId(namespaceId);
-        NamespaceObject namespaceDetails = NamespaceObject.findById(ns_id);
-        return namespaceDetails;
+    public NamespaceObject getNamespaceEntityDetails(UUID namespaceId) {
+        return namespaceRepository.findById(namespaceId);
     }
 
     @Transactional
     public NamespaceObject findByNamespace(List<String> namespace) {
-        return NamespaceObject.find("namespace", namespace).firstResult();
+        return namespaceRepository.findByNamespace(namespace);
+    }
+
+    @Transactional
+    public NamespaceObject findByName(String name) {
+        return namespaceRepository.findByName(name);
     }
 
     @Transactional
@@ -41,7 +48,13 @@ public class NamespaceEntityService {
             String namespacePath = String.join("/", ns_object.getNamespace());
             properties.put("location", "s3://" + bucket + "/" + namespacePath);
         }
-        ns_object.persist();
+        namespaceRepository.persist(ns_object);
         return ns_object;
+    }
+
+    @Transactional
+    public void deleteById(UUID uuid) {
+        NamespaceObject ns_object = getNamespaceEntityDetails(uuid);
+        namespaceRepository.deleteNamespace(ns_object);
     }
 }
