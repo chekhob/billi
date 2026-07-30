@@ -6,6 +6,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
+import org.acme.context.RequestContext;
 import org.acme.dto.CreateNamespaceRequest;
 import org.acme.dto.ErrorResponse;
 import org.acme.dto.NamespaceResponse;
@@ -22,129 +23,129 @@ import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 @Path("/namespaces")
 public class NamespaceResources {
 
-    @Inject
-    MetadataRequests metadataRequests;
+  @Inject
+  MetadataRequests metadataRequests;
 
-    @Inject
-    NamespaceEntityService namespaceEntityService;
+  @Inject
+  NamespaceEntityService namespaceEntityService;
 
-    @Inject
-    TablesResource tablesResource;
+  @Inject
+  TablesResource tablesResource;
 
-    @ServerExceptionMapper
-    public Response mapException(noSuchNamespaceException e) {
-        return Response.status(e.code.getStatusCode())
-            .type(MediaType.APPLICATION_JSON)
-            .entity(
-                new ErrorResponse(
-                    "Namespace does not exist",
-                    e.element +
-                        ": " +
-                        e.getMessage() +
-                        "\n" +
-                        Arrays.toString(e.getStackTrace())
-                )
-            )
-            .build();
+  @Inject
+  RequestContext requestContext;
+
+  @ServerExceptionMapper
+  public Response mapException(noSuchNamespaceException e) {
+    return Response.status(e.code.getStatusCode())
+        .type(MediaType.APPLICATION_JSON)
+        .entity(
+            new ErrorResponse(
+                "Namespace does not exist",
+                e.element +
+                    ": " +
+                    e.getMessage() +
+                    "\n" +
+                    Arrays.toString(e.getStackTrace())))
+        .build();
+  }
+
+  @ServerExceptionMapper
+  public Response mapException(Exception e) {
+    return Response.status(400)
+        .type(MediaType.APPLICATION_JSON)
+        .entity(
+            new ErrorResponse(
+                e.getMessage(),
+                Arrays.stream(e.getStackTrace()).toList().toString()))
+        .build();
+  }
+
+  @GET
+  public Response getNamespacesList() {
+    return Response.ok().build();
+  }
+
+  @POST
+  public Response createNewNamespace(
+      CreateNamespaceRequest namespaceRequest) {
+    NamespaceObject entity = new NamespaceObject();
+    entity.setNamespace(namespaceRequest.getNamespace());
+    entity.setProperties(namespaceRequest.getProperties());
+
+    NamespaceObject saved = namespaceEntityService.createNamespace(entity);
+
+    NamespaceResponse response = new NamespaceResponse(
+        saved.getNamespace(),
+        saved.getProperties());
+    return Response.ok().entity(response).build();
+  }
+
+  @Path("/{ns_name}")
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getNamespaceDetails(
+      @PathParam("ns_name") String namespace) {
+    List<String> namespaceList = List.of(namespace);
+    NamespaceObject namespaceDetails = namespaceEntityService.findByNamespace(namespaceList);
+
+    if (namespaceDetails != null) {
+      NamespaceResponse response = new NamespaceResponse(
+          namespaceDetails.getNamespace(),
+          namespaceDetails.getProperties());
+      return Response.ok().entity(response).build();
+    } else {
+      throw new noSuchNamespaceException(namespace);
     }
+  }
 
-    @ServerExceptionMapper
-    public Response mapException(Exception e) {
-        return Response.status(400)
-            .type(MediaType.APPLICATION_JSON)
-            .entity(
-                new ErrorResponse(
-                    e.getMessage(),
-                    Arrays.stream(e.getStackTrace()).toList().toString()
-                )
-            )
-            .build();
+  // TODO: Create & Read are working above, have to add Update for Properties and
+  // Delete
+
+  @Path("/{ns_name}/tables")
+  public TablesResource tables(@PathParam("ns_name") String name) {
+    List<String> namespaceList = List.of(name);
+    NamespaceObject ns = namespaceEntityService.findByNamespace(namespaceList);
+    if (ns == null) {
+      throw new noSuchNamespaceException(name);
     }
+    requestContext.setNamespace(ns);
+    return tablesResource;
+  }
 
-    @GET
-    public Response getNamespacesList() {
-        return Response.ok().build();
-    }
-
-    @POST
-    public Response createNewNamespace(
-        CreateNamespaceRequest namespaceRequest
-    ) {
-        NamespaceObject entity = new NamespaceObject();
-        entity.setNamespace(namespaceRequest.getNamespace());
-        entity.setProperties(namespaceRequest.getProperties());
-
-        NamespaceObject saved = namespaceEntityService.createNamespace(entity);
-
-        NamespaceResponse response = new NamespaceResponse(
-            saved.getNamespace(),
-            saved.getProperties()
-        );
-        return Response.ok().entity(response).build();
-    }
-
-    @Path("/{ns_name}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getNamespaceDetails(
-        @PathParam("ns_name") String namespace
-    ) {
-        List<String> namespaceList = List.of(namespace);
-        NamespaceObject namespaceDetails =
-            namespaceEntityService.findByNamespace(namespaceList);
-
-        if (namespaceDetails != null) {
-            NamespaceResponse response = new NamespaceResponse(
-                namespaceDetails.getNamespace(),
-                namespaceDetails.getProperties()
-            );
-            return Response.ok().entity(response).build();
-        } else {
-            throw new noSuchNamespaceException(namespace);
-        }
-    }
-
-    //TODO: Create & Read are working above, have to add Update for Properties and Delete
-
-    @Path("/{ns_name}/tables")
-    public TablesResource tables() {
-        return tablesResource;
-    }
-
-    @Path("/mongodb/{ns_name}/{tb_name}")
-    @GET
-    public Response temp(
-        @PathParam("ns_name") String namespace,
-        @PathParam("tb_name") String table
-    ) {
-        // TODO: Add a mongo or db function from here
-        return Response.ok().build();
-    }
+  @Path("/mongodb/{ns_name}/{tb_name}")
+  @GET
+  public Response temp(
+      @PathParam("ns_name") String namespace,
+      @PathParam("tb_name") String table) {
+    // TODO: Add a mongo or db function from here
+    return Response.ok().build();
+  }
 }
 
 class noSuchTableException extends RuntimeException {
 
-    public final Response.Status code;
-    public final String element;
+  public final Response.Status code;
+  public final String element;
 
-    public final String namespace;
-    public final String type = "NoSuchTableException";
+  public final String namespace;
+  public final String type = "NoSuchTableException";
 
-    public noSuchTableException(String element, String namespace) {
-        this.element = element;
-        this.namespace = namespace;
-        this.code = Response.Status.NOT_FOUND;
-    }
+  public noSuchTableException(String element, String namespace) {
+    this.element = element;
+    this.namespace = namespace;
+    this.code = Response.Status.NOT_FOUND;
+  }
 }
 
 class noSuchNamespaceException extends RuntimeException {
 
-    public final Response.Status code;
-    public final String element;
-    public final String type = "NoSuchNamespaceException";
+  public final Response.Status code;
+  public final String element;
+  public final String type = "NoSuchNamespaceException";
 
-    public noSuchNamespaceException(String element) {
-        this.element = element;
-        this.code = Response.Status.NOT_FOUND;
-    }
+  public noSuchNamespaceException(String element) {
+    this.element = element;
+    this.code = Response.Status.NOT_FOUND;
+  }
 }

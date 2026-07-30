@@ -63,7 +63,6 @@ security:
 
 paths:
   /v1/config:
-
     get:
       tags:
         - Configuration API
@@ -76,8 +75,7 @@ paths:
           schema:
             type: string
           description: Warehouse location or identifier to request from the service
-      description:
-        "
+      description: "
         All REST clients should first call this route to get catalog configuration
         properties from the server to configure the catalog and its HTTP client.
         Configuration from the server consists of two sets of key/value pairs.
@@ -105,33 +103,33 @@ paths:
         The catalog configuration also holds an optional `endpoints` field that contains information about the endpoints
         supported by the server. If a server does not send the `endpoints` field, a default set of endpoints is assumed:
 
-          - GET /v1/{prefix}/namespaces
+        - GET /v1/{prefix}/namespaces
 
-          - POST /v1/{prefix}/namespaces
+        - POST /v1/{prefix}/namespaces
 
-          - GET /v1/{prefix}/namespaces/{namespace}
+        - GET /v1/{prefix}/namespaces/{namespace}
 
-          - DELETE /v1/{prefix}/namespaces/{namespace}
+        - DELETE /v1/{prefix}/namespaces/{namespace}
 
-          - POST /v1/{prefix}/namespaces/{namespace}/properties
+        - POST /v1/{prefix}/namespaces/{namespace}/properties
 
-          - GET /v1/{prefix}/namespaces/{namespace}/tables
+        - GET /v1/{prefix}/namespaces/{namespace}/tables
 
-          - POST /v1/{prefix}/namespaces/{namespace}/tables
+        - POST /v1/{prefix}/namespaces/{namespace}/tables
 
-          - GET /v1/{prefix}/namespaces/{namespace}/tables/{table}
+        - GET /v1/{prefix}/namespaces/{namespace}/tables/{table}
 
-          - POST /v1/{prefix}/namespaces/{namespace}/tables/{table}
+        - POST /v1/{prefix}/namespaces/{namespace}/tables/{table}
 
-          - DELETE /v1/{prefix}/namespaces/{namespace}/tables/{table}
+        - DELETE /v1/{prefix}/namespaces/{namespace}/tables/{table}
 
-          - POST /v1/{prefix}/namespaces/{namespace}/register
+        - POST /v1/{prefix}/namespaces/{namespace}/register
 
-          - POST /v1/{prefix}/namespaces/{namespace}/tables/{table}/metrics
+        - POST /v1/{prefix}/namespaces/{namespace}/tables/{table}/metrics
 
-          - POST /v1/{prefix}/tables/rename
+        - POST /v1/{prefix}/tables/rename
 
-          - POST /v1/{prefix}/transactions/commit
+        - POST /v1/{prefix}/transactions/commit
         "
       responses:
         200:
@@ -139,38 +137,35 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CatalogConfig'
-              example: {
-                "overrides": {
-                  "warehouse": "s3://bucket/warehouse/"
-                },
-                "defaults": {
-                  "clients": "4"
-                },
-                "idempotency-key-lifetime": "PT30M",
-                "endpoints": [
-                  "GET /v1/{prefix}/namespaces/{namespace}",
-                  "GET /v1/{prefix}/namespaces",
-                  "POST /v1/{prefix}/namespaces",
-                  "GET /v1/{prefix}/namespaces/{namespace}/tables/{table}",
-                  "GET /v1/{prefix}/namespaces/{namespace}/views/{view}"
-                ]
-              }
+                $ref: "#/components/schemas/CatalogConfig"
+              example:
+                {
+                  "overrides": { "warehouse": "s3://bucket/warehouse/" },
+                  "defaults": { "clients": "4" },
+                  "idempotency-key-lifetime": "PT30M",
+                  "endpoints":
+                    [
+                      "GET /v1/{prefix}/namespaces/{namespace}",
+                      "GET /v1/{prefix}/namespaces",
+                      "POST /v1/{prefix}/namespaces",
+                      "GET /v1/{prefix}/namespaces/{namespace}/tables/{table}",
+                      "GET /v1/{prefix}/namespaces/{namespace}/views/{view}",
+                    ],
+                }
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
   /v1/oauth/tokens:
-
     post:
       tags:
         - OAuth2 API
@@ -196,13 +191,13 @@ paths:
         This endpoint is used for three purposes -
 
         1. To exchange client credentials (client ID and secret) for an access token
-           This uses the client credentials flow.
+        This uses the client credentials flow.
 
         2. To exchange a client token and an identity token for a more specific access token
-           This uses the token exchange flow.
+        This uses the token exchange flow.
 
         3. To exchange an access token for one with the same claims and a refreshed expiration period
-           This uses the token exchange flow.
+        This uses the token exchange flow.
 
 
         For example, a catalog client may be configured with client credentials from the OAuth2
@@ -227,20 +222,20 @@ paths:
         content:
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/OAuthTokenRequest'
+              $ref: "#/components/schemas/OAuthTokenRequest"
       responses:
         200:
-          $ref: '#/components/responses/OAuthTokenResponse'
+          $ref: "#/components/responses/OAuthTokenResponse"
         400:
-          $ref: '#/components/responses/OAuthErrorResponse'
+          $ref: "#/components/responses/OAuthErrorResponse"
         401:
-          $ref: '#/components/responses/OAuthErrorResponse'
+          $ref: "#/components/responses/OAuthErrorResponse"
         5XX:
-          $ref: '#/components/responses/OAuthErrorResponse'
+          $ref: "#/components/responses/OAuthErrorResponse"
 
   /v1/{prefix}/namespaces:
     parameters:
-      - $ref: '#/components/parameters/prefix'
+      - $ref: "#/components/parameters/prefix"
 
     get:
       tags:
@@ -255,8 +250,8 @@ paths:
         If `parent` is not provided, all top-level namespaces should be listed.
       operationId: listNamespaces
       parameters:
-        - $ref: '#/components/parameters/page-token'
-        - $ref: '#/components/parameters/page-size'
+        - $ref: "#/components/parameters/page-token"
+        - $ref: "#/components/parameters/page-size"
         - name: parent
           in: query
           description:
@@ -273,37 +268,36 @@ paths:
           example: "accounting%1Ftax"
       responses:
         200:
-          $ref: '#/components/responses/ListNamespacesResponse'
+          $ref: "#/components/responses/ListNamespacesResponse"
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
           description: Not Found - Namespace provided in the `parent` query parameter is not found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 NoSuchNamespaceExample:
-                  $ref: '#/components/examples/NoSuchNamespaceError'
+                  $ref: "#/components/examples/NoSuchNamespaceError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
     post:
       tags:
         - Catalog API
       summary: Create a namespace
       parameters:
-        - $ref: '#/components/parameters/idempotency-key'
-      description:
-        Create a namespace, with an optional set of properties.
+        - $ref: "#/components/parameters/idempotency-key"
+      description: Create a namespace, with an optional set of properties.
         The server might also add properties, such as `last_modified_time` etc.
       operationId: createNamespace
       requestBody:
@@ -311,38 +305,38 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateNamespaceRequest'
+              $ref: "#/components/schemas/CreateNamespaceRequest"
       responses:
         200:
-          $ref: '#/components/responses/CreateNamespaceResponse'
+          $ref: "#/components/responses/CreateNamespaceResponse"
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         406:
-          $ref: '#/components/responses/UnsupportedOperationResponse'
+          $ref: "#/components/responses/UnsupportedOperationResponse"
         409:
           description: Conflict - The namespace already exists
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 NamespaceAlreadyExists:
-                  $ref: '#/components/examples/NamespaceAlreadyExistsError'
+                  $ref: "#/components/examples/NamespaceAlreadyExistsError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
   /v1/{prefix}/namespaces/{namespace}:
     parameters:
-      - $ref: '#/components/parameters/prefix'
-      - $ref: '#/components/parameters/namespace'
+      - $ref: "#/components/parameters/prefix"
+      - $ref: "#/components/parameters/namespace"
 
     get:
       tags:
@@ -352,60 +346,59 @@ paths:
       description: Return all stored metadata properties for a given namespace
       responses:
         200:
-          $ref: '#/components/responses/GetNamespaceResponse'
+          $ref: "#/components/responses/GetNamespaceResponse"
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
           description: Not Found - Namespace not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 NoSuchNamespaceExample:
-                  $ref: '#/components/examples/NoSuchNamespaceError'
+                  $ref: "#/components/examples/NoSuchNamespaceError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
     head:
       tags:
         - Catalog API
       summary: Check if a namespace exists
       operationId: namespaceExists
-      description:
-        Check if a namespace exists. The response does not contain a body.
+      description: Check if a namespace exists. The response does not contain a body.
       responses:
         204:
           description: Success, no content
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
           description: Not Found - Namespace not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 NoSuchNamespaceExample:
-                  $ref: '#/components/examples/NoSuchNamespaceError'
+                  $ref: "#/components/examples/NoSuchNamespaceError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
     delete:
       tags:
@@ -413,45 +406,45 @@ paths:
       summary: Drop a namespace from the catalog. Namespace must be empty.
       operationId: dropNamespace
       parameters:
-        - $ref: '#/components/parameters/idempotency-key'
+        - $ref: "#/components/parameters/idempotency-key"
       responses:
         204:
           description: Success, no content
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
           description: Not Found - Namespace to delete does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 NoSuchNamespaceExample:
-                  $ref: '#/components/examples/NoSuchNamespaceError'
+                  $ref: "#/components/examples/NoSuchNamespaceError"
         409:
           description: Not Empty - Namespace to delete is not empty.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 NamespaceNotEmptyExample:
-                  $ref: '#/components/examples/NamespaceNotEmptyError'
+                  $ref: "#/components/examples/NamespaceNotEmptyError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
   /v1/{prefix}/namespaces/{namespace}/properties:
     parameters:
-      - $ref: '#/components/parameters/prefix'
-      - $ref: '#/components/parameters/namespace'
+      - $ref: "#/components/parameters/prefix"
+      - $ref: "#/components/parameters/namespace"
 
     post:
       tags:
@@ -459,9 +452,8 @@ paths:
       summary: Set or remove properties on a namespace
       operationId: updateProperties
       parameters:
-        - $ref: '#/components/parameters/idempotency-key'
-      description:
-        Set and/or remove properties on a namespace.
+        - $ref: "#/components/parameters/idempotency-key"
+      description: Set and/or remove properties on a namespace.
         The request body specifies a list of properties to remove and a map
         of key value pairs to update.
 
@@ -473,50 +465,50 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateNamespacePropertiesRequest'
+              $ref: "#/components/schemas/UpdateNamespacePropertiesRequest"
             examples:
               UpdateAndRemoveProperties:
-                $ref: '#/components/examples/UpdateAndRemoveNamespacePropertiesRequest'
+                $ref: "#/components/examples/UpdateAndRemoveNamespacePropertiesRequest"
       responses:
         200:
-          $ref: '#/components/responses/UpdateNamespacePropertiesResponse'
+          $ref: "#/components/responses/UpdateNamespacePropertiesResponse"
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
           description: Not Found - Namespace not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 NamespaceNotFound:
-                  $ref: '#/components/examples/NoSuchNamespaceError'
+                  $ref: "#/components/examples/NoSuchNamespaceError"
         406:
-          $ref: '#/components/responses/UnsupportedOperationResponse'
+          $ref: "#/components/responses/UnsupportedOperationResponse"
         422:
           description: Unprocessable Entity - A property key was included in both `removals` and `updates`
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 UnprocessableEntityDuplicateKey:
-                  $ref: '#/components/examples/UnprocessableEntityDuplicateKey'
+                  $ref: "#/components/examples/UnprocessableEntityDuplicateKey"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
   /v1/{prefix}/namespaces/{namespace}/tables:
     parameters:
-      - $ref: '#/components/parameters/prefix'
-      - $ref: '#/components/parameters/namespace'
+      - $ref: "#/components/parameters/prefix"
+      - $ref: "#/components/parameters/namespace"
 
     get:
       tags:
@@ -525,32 +517,32 @@ paths:
       description: Return all table identifiers under this namespace
       operationId: listTables
       parameters:
-        - $ref: '#/components/parameters/page-token'
-        - $ref: '#/components/parameters/page-size'
+        - $ref: "#/components/parameters/page-token"
+        - $ref: "#/components/parameters/page-size"
       responses:
         200:
-          $ref: '#/components/responses/ListTablesResponse'
+          $ref: "#/components/responses/ListTablesResponse"
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
           description: Not Found - The namespace specified does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 NamespaceNotFound:
-                  $ref: '#/components/examples/NoSuchNamespaceError'
+                  $ref: "#/components/examples/NoSuchNamespaceError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
     post:
       tags:
@@ -571,53 +563,53 @@ paths:
         table state.
       operationId: createTable
       parameters:
-        - $ref: '#/components/parameters/data-access'
-        - $ref: '#/components/parameters/idempotency-key'
+        - $ref: "#/components/parameters/data-access"
+        - $ref: "#/components/parameters/idempotency-key"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateTableRequest'
+              $ref: "#/components/schemas/CreateTableRequest"
       responses:
         200:
-          $ref: '#/components/responses/CreateTableResponse'
+          $ref: "#/components/responses/CreateTableResponse"
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
           description: Not Found - The namespace specified does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 NamespaceNotFound:
-                  $ref: '#/components/examples/NoSuchNamespaceError'
+                  $ref: "#/components/examples/NoSuchNamespaceError"
         409:
           description: Conflict - The table already exists
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 TableAlreadyExists:
-                  $ref: '#/components/examples/TableAlreadyExistsError'
+                  $ref: "#/components/examples/TableAlreadyExistsError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
   /v1/{prefix}/namespaces/{namespace}/tables/{table}/plan:
     parameters:
-      - $ref: '#/components/parameters/prefix'
-      - $ref: '#/components/parameters/namespace'
-      - $ref: '#/components/parameters/table'
+      - $ref: "#/components/parameters/prefix"
+      - $ref: "#/components/parameters/namespace"
+      - $ref: "#/components/parameters/table"
     post:
       tags:
         - Catalog API
@@ -663,50 +655,49 @@ paths:
           fetchScanTasks has been used to fetch scan tasks for each plan task.
       operationId: planTableScan
       parameters:
-        - $ref: '#/components/parameters/idempotency-key'
+        - $ref: "#/components/parameters/idempotency-key"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PlanTableScanRequest'
+              $ref: "#/components/schemas/PlanTableScanRequest"
       responses:
         200:
-          $ref: '#/components/responses/PlanTableScanResponse'
+          $ref: "#/components/responses/PlanTableScanResponse"
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
-          description:
-            Not Found
+          description: Not Found
             - NoSuchTableException, the table does not exist
             - NoSuchNamespaceException, the namespace does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 TableDoesNotExist:
-                  $ref: '#/components/examples/NoSuchTableError'
+                  $ref: "#/components/examples/NoSuchTableError"
                 NamespaceDoesNotExist:
-                  $ref: '#/components/examples/NoSuchNamespaceError'
+                  $ref: "#/components/examples/NoSuchNamespaceError"
         406:
-          $ref: '#/components/responses/UnsupportedOperationResponse'
+          $ref: "#/components/responses/UnsupportedOperationResponse"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
   /v1/{prefix}/namespaces/{namespace}/tables/{table}/plan/{plan-id}:
     parameters:
-      - $ref: '#/components/parameters/prefix'
-      - $ref: '#/components/parameters/namespace'
-      - $ref: '#/components/parameters/table'
-      - $ref: '#/components/parameters/plan-id'
+      - $ref: "#/components/parameters/prefix"
+      - $ref: "#/components/parameters/namespace"
+      - $ref: "#/components/parameters/table"
+      - $ref: "#/components/parameters/plan-id"
 
     get:
       tags:
@@ -735,36 +726,35 @@ paths:
         response. Tasks must not be included for any other response status.
       responses:
         200:
-          $ref: '#/components/responses/FetchPlanningResultResponse'
+          $ref: "#/components/responses/FetchPlanningResultResponse"
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
-          description:
-            Not Found
+          description: Not Found
             - NoSuchPlanIdException, the plan-id does not exist
             - NoSuchTableException, the table does not exist
             - NoSuchNamespaceException, the namespace does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 PlanIdDoesNotExist:
-                  $ref: '#/components/examples/NoSuchPlanIdError'
+                  $ref: "#/components/examples/NoSuchPlanIdError"
                 TableDoesNotExist:
-                  $ref: '#/components/examples/NoSuchTableError'
+                  $ref: "#/components/examples/NoSuchTableError"
                 NamespaceDoesNotExist:
-                  $ref: '#/components/examples/NoSuchNamespaceError'
+                  $ref: "#/components/examples/NoSuchNamespaceError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
     delete:
       tags:
@@ -772,7 +762,7 @@ paths:
       summary: Cancels scan planning for a plan-id
       operationId: cancelPlanning
       parameters:
-        - $ref: '#/components/parameters/idempotency-key'
+        - $ref: "#/components/parameters/idempotency-key"
       description: >
         Cancels scan planning for a plan-id.
 
@@ -793,41 +783,39 @@ paths:
         204:
           description: Success, no content
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
-          description:
-            Not Found
+          description: Not Found
             - NoSuchPlanIdException, the plan-id does not exist
             - NoSuchTableException, the table does not exist
             - NoSuchNamespaceException, the namespace does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 PlanIdDoesNotExist:
-                  $ref: '#/components/examples/NoSuchPlanIdError'
+                  $ref: "#/components/examples/NoSuchPlanIdError"
                 TableDoesNotExist:
-                  $ref: '#/components/examples/NoSuchTableError'
+                  $ref: "#/components/examples/NoSuchTableError"
                 NamespaceDoesNotExist:
-                  $ref: '#/components/examples/NoSuchNamespaceError'
+                  $ref: "#/components/examples/NoSuchNamespaceError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
-
+          $ref: "#/components/responses/ServerErrorResponse"
 
   /v1/{prefix}/namespaces/{namespace}/tables/{table}/tasks:
     parameters:
-      - $ref: '#/components/parameters/prefix'
-      - $ref: '#/components/parameters/namespace'
-      - $ref: '#/components/parameters/table'
+      - $ref: "#/components/parameters/prefix"
+      - $ref: "#/components/parameters/namespace"
+      - $ref: "#/components/parameters/table"
 
     post:
       tags:
@@ -835,59 +823,57 @@ paths:
       summary: Fetches result tasks for a plan task
       operationId: fetchScanTasks
       parameters:
-        - $ref: '#/components/parameters/idempotency-key'
+        - $ref: "#/components/parameters/idempotency-key"
       description: Fetches result tasks for a plan task.
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FetchScanTasksRequest'
+              $ref: "#/components/schemas/FetchScanTasksRequest"
       responses:
         200:
-          $ref: '#/components/responses/FetchScanTasksResponse'
+          $ref: "#/components/responses/FetchScanTasksResponse"
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
-          description:
-            Not Found
+          description: Not Found
             - NoSuchPlanTaskException, the plan-task does not exist
             - NoSuchTableException, the table does not exist
             - NoSuchNamespaceException, the namespace does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 PlanTaskDoesNotExist:
-                  $ref: '#/components/examples/NoSuchPlanTaskError'
+                  $ref: "#/components/examples/NoSuchPlanTaskError"
                 TableDoesNotExist:
-                  $ref: '#/components/examples/NoSuchTableError'
+                  $ref: "#/components/examples/NoSuchTableError"
                 NamespaceDoesNotExist:
-                  $ref: '#/components/examples/NoSuchNamespaceError'
+                  $ref: "#/components/examples/NoSuchNamespaceError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
   /v1/{prefix}/namespaces/{namespace}/register:
     parameters:
-      - $ref: '#/components/parameters/prefix'
-      - $ref: '#/components/parameters/namespace'
+      - $ref: "#/components/parameters/prefix"
+      - $ref: "#/components/parameters/namespace"
 
     post:
       tags:
         - Catalog API
       summary: Register a table in the given namespace using given metadata file location
       parameters:
-        - $ref: '#/components/parameters/idempotency-key'
-      description:
-        Register a table using given metadata file location.
+        - $ref: "#/components/parameters/idempotency-key"
+      description: Register a table using given metadata file location.
 
       operationId: registerTable
       requestBody:
@@ -895,54 +881,53 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterTableRequest'
+              $ref: "#/components/schemas/RegisterTableRequest"
       responses:
         200:
-          $ref: '#/components/responses/LoadTableResponse'
+          $ref: "#/components/responses/LoadTableResponse"
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
           description: Not Found - The namespace specified does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 NamespaceNotFound:
-                  $ref: '#/components/examples/NoSuchNamespaceError'
+                  $ref: "#/components/examples/NoSuchNamespaceError"
         409:
           description: Conflict - The table already exists
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 TableAlreadyExists:
-                  $ref: '#/components/examples/TableAlreadyExistsError'
+                  $ref: "#/components/examples/TableAlreadyExistsError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
   /v1/{prefix}/namespaces/{namespace}/tables/{table}:
     parameters:
-      - $ref: '#/components/parameters/prefix'
-      - $ref: '#/components/parameters/namespace'
-      - $ref: '#/components/parameters/table'
+      - $ref: "#/components/parameters/prefix"
+      - $ref: "#/components/parameters/namespace"
+      - $ref: "#/components/parameters/table"
 
     get:
       tags:
         - Catalog API
       summary: Load a table from the catalog
       operationId: loadTable
-      description:
-        Load a table from the catalog.
+      description: Load a table from the catalog.
 
 
         The response contains both configuration and table metadata. The configuration, if non-empty is used
@@ -958,7 +943,7 @@ paths:
         for table requests. Otherwise, a token may be passed using a RFC 8693 token type as a configuration
         key. For example, "urn:ietf:params:oauth:token-type:jwt=<JWT-token>".
       parameters:
-        - $ref: '#/components/parameters/data-access'
+        - $ref: "#/components/parameters/data-access"
         - name: If-None-Match
           in: header
           description:
@@ -979,36 +964,35 @@ paths:
           required: false
           schema:
             type: string
-            enum: [ all, refs ]
+            enum: [all, refs]
       responses:
         200:
-          $ref: '#/components/responses/LoadTableResponse'
+          $ref: "#/components/responses/LoadTableResponse"
         304:
           description:
             Not Modified - Based on the content of the 'If-None-Match' header the table metadata has
             not changed since.
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
-          description:
-            Not Found - NoSuchTableException, table to load does not exist
+          description: Not Found - NoSuchTableException, table to load does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 TableToLoadDoesNotExist:
-                  $ref: '#/components/examples/NoSuchTableError'
+                  $ref: "#/components/examples/NoSuchTableError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
     post:
       tags:
@@ -1016,9 +1000,8 @@ paths:
       summary: Commit updates to a table
       operationId: updateTable
       parameters:
-        - $ref: '#/components/parameters/idempotency-key'
-      description:
-        Commit updates to a table.
+        - $ref: "#/components/parameters/idempotency-key"
+      description: Commit updates to a table.
 
 
         Commits have two parts, requirements and updates. Requirements are assertions that will be validated
@@ -1042,93 +1025,95 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CommitTableRequest'
+              $ref: "#/components/schemas/CommitTableRequest"
       responses:
         200:
-          $ref: '#/components/responses/CommitTableResponse'
+          $ref: "#/components/responses/CommitTableResponse"
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
-          description:
-            Not Found - NoSuchTableException, table to load does not exist
+          description: Not Found - NoSuchTableException, table to load does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 TableToUpdateDoesNotExist:
-                  $ref: '#/components/examples/NoSuchTableError'
+                  $ref: "#/components/examples/NoSuchTableError"
         409:
-          description:
-            Conflict - CommitFailedException, one or more requirements failed. The client may retry.
+          description: Conflict - CommitFailedException, one or more requirements failed. The client may retry.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         500:
-          description:
-            An unknown server-side problem occurred; the commit state is unknown.
+          description: An unknown server-side problem occurred; the commit state is unknown.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
-              example: {
-                "error": {
-                  "message": "Internal Server Error",
-                  "type": "CommitStateUnknownException",
-                  "code": 500
+                $ref: "#/components/schemas/IcebergErrorResponse"
+              example:
+                {
+                  "error":
+                    {
+                      "message": "Internal Server Error",
+                      "type": "CommitStateUnknownException",
+                      "code": 500,
+                    },
                 }
-              }
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         502:
-          description:
-            A gateway or proxy received an invalid response from the upstream server; the commit state is unknown.
+          description: A gateway or proxy received an invalid response from the upstream server; the commit state is unknown.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
-              example: {
-                "error": {
-                  "message": "Invalid response from the upstream server",
-                  "type": "CommitStateUnknownException",
-                  "code": 502
+                $ref: "#/components/schemas/IcebergErrorResponse"
+              example:
+                {
+                  "error":
+                    {
+                      "message": "Invalid response from the upstream server",
+                      "type": "CommitStateUnknownException",
+                      "code": 502,
+                    },
                 }
-              }
         504:
-          description:
-            A server-side gateway timeout occurred; the commit state is unknown.
+          description: A server-side gateway timeout occurred; the commit state is unknown.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
-              example: {
-                "error": {
-                  "message": "Gateway timed out during commit",
-                  "type": "CommitStateUnknownException",
-                  "code": 504
+                $ref: "#/components/schemas/IcebergErrorResponse"
+              example:
+                {
+                  "error":
+                    {
+                      "message": "Gateway timed out during commit",
+                      "type": "CommitStateUnknownException",
+                      "code": 504,
+                    },
                 }
-              }
         5XX:
-          description:
-            A server-side problem that might not be addressable on the client.
+          description: A server-side problem that might not be addressable on the client.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
-              example: {
-                "error": {
-                  "message": "Bad Gateway",
-                  "type": "InternalServerError",
-                  "code": 502
+                $ref: "#/components/schemas/IcebergErrorResponse"
+              example:
+                {
+                  "error":
+                    {
+                      "message": "Bad Gateway",
+                      "type": "InternalServerError",
+                      "code": 502,
+                    },
                 }
-              }
 
     delete:
       tags:
@@ -1137,7 +1122,7 @@ paths:
       operationId: dropTable
       description: Remove a table from the catalog
       parameters:
-        - $ref: '#/components/parameters/idempotency-key'
+        - $ref: "#/components/parameters/idempotency-key"
         - name: purgeRequested
           in: query
           required: false
@@ -1149,66 +1134,63 @@ paths:
         204:
           description: Success, no content
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
-          description:
-            Not Found - NoSuchTableException, Table to drop does not exist
+          description: Not Found - NoSuchTableException, Table to drop does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 TableToDeleteDoesNotExist:
-                  $ref: '#/components/examples/NoSuchTableError'
+                  $ref: "#/components/examples/NoSuchTableError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
     head:
       tags:
         - Catalog API
       summary: Check if a table exists
       operationId: tableExists
-      description:
-        Check if a table exists within a given namespace. The response does not contain a body.
+      description: Check if a table exists within a given namespace. The response does not contain a body.
       responses:
         204:
           description: Success, no content
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
-          description:
-            Not Found - NoSuchTableException, Table not found
+          description: Not Found - NoSuchTableException, Table not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 TableToLoadDoesNotExist:
-                  $ref: '#/components/examples/NoSuchTableError'
+                  $ref: "#/components/examples/NoSuchTableError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
   /v1/{prefix}/namespaces/{namespace}/tables/{table}/credentials:
     parameters:
-      - $ref: '#/components/parameters/prefix'
-      - $ref: '#/components/parameters/namespace'
-      - $ref: '#/components/parameters/table'
+      - $ref: "#/components/parameters/prefix"
+      - $ref: "#/components/parameters/namespace"
+      - $ref: "#/components/parameters/table"
 
     get:
       tags:
@@ -1225,40 +1207,39 @@ paths:
       description: Load vended credentials for a table from the catalog.
       responses:
         200:
-          $ref: '#/components/responses/LoadCredentialsResponse'
+          $ref: "#/components/responses/LoadCredentialsResponse"
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
-          description:
-            Not Found - NoSuchTableException, table to load credentials for does not exist
+          description: Not Found - NoSuchTableException, table to load credentials for does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 TableToLoadDoesNotExist:
-                  $ref: '#/components/examples/NoSuchTableError'
+                  $ref: "#/components/examples/NoSuchTableError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
   /v1/{prefix}/tables/rename:
     parameters:
-      - $ref: '#/components/parameters/prefix'
+      - $ref: "#/components/parameters/prefix"
 
     post:
       tags:
         - Catalog API
       summary: Rename a table from its current name to a new name
       parameters:
-        - $ref: '#/components/parameters/idempotency-key'
+        - $ref: "#/components/parameters/idempotency-key"
       description:
         Rename a table from one identifier to another. It's valid to move a table
         across namespaces, but the server implementation is not required to support it.
@@ -1268,56 +1249,55 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RenameTableRequest'
+              $ref: "#/components/schemas/RenameTableRequest"
             examples:
               RenameTableSameNamespace:
-                $ref: '#/components/examples/RenameTableSameNamespace'
+                $ref: "#/components/examples/RenameTableSameNamespace"
         required: true
       responses:
         204:
           description: Success, no content
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
-          description:
-            Not Found
+          description: Not Found
             - NoSuchTableException, Table to rename does not exist
             - NoSuchNamespaceException, The target namespace of the new table identifier does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 TableToRenameDoesNotExist:
-                  $ref: '#/components/examples/NoSuchTableError'
+                  $ref: "#/components/examples/NoSuchTableError"
                 NamespaceToRenameToDoesNotExist:
-                  $ref: '#/components/examples/NoSuchNamespaceError'
+                  $ref: "#/components/examples/NoSuchNamespaceError"
         406:
-          $ref: '#/components/responses/UnsupportedOperationResponse'
+          $ref: "#/components/responses/UnsupportedOperationResponse"
         409:
           description: Conflict - The target identifier to rename to already exists as a table or view
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               example:
-                $ref: '#/components/examples/TableAlreadyExistsError'
+                $ref: "#/components/examples/TableAlreadyExistsError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
   /v1/{prefix}/namespaces/{namespace}/tables/{table}/metrics:
     parameters:
-      - $ref: '#/components/parameters/prefix'
-      - $ref: '#/components/parameters/namespace'
-      - $ref: '#/components/parameters/table'
+      - $ref: "#/components/parameters/prefix"
+      - $ref: "#/components/parameters/namespace"
+      - $ref: "#/components/parameters/table"
 
     post:
       tags:
@@ -1329,37 +1309,36 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReportMetricsRequest'
+              $ref: "#/components/schemas/ReportMetricsRequest"
         required: true
       responses:
         204:
           description: Success, no content
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
-          description:
-            Not Found - NoSuchTableException, table to load does not exist
+          description: Not Found - NoSuchTableException, table to load does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 TableToLoadDoesNotExist:
-                  $ref: '#/components/examples/NoSuchTableError'
+                  $ref: "#/components/examples/NoSuchTableError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
   /v1/{prefix}/transactions/commit:
     parameters:
-      - $ref: '#/components/parameters/prefix'
+      - $ref: "#/components/parameters/prefix"
 
     post:
       tags:
@@ -1367,10 +1346,9 @@ paths:
       summary: Commit updates to multiple tables in an atomic operation
       operationId: commitTransaction
       parameters:
-        - $ref: '#/components/parameters/idempotency-key'
+        - $ref: "#/components/parameters/idempotency-key"
       requestBody:
-        description:
-          Commit updates to multiple tables in an atomic operation
+        description: Commit updates to multiple tables in an atomic operation
 
 
           A commit for a single table consists of a table identifier with requirements and updates.
@@ -1385,99 +1363,101 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CommitTransactionRequest'
+              $ref: "#/components/schemas/CommitTransactionRequest"
         required: true
       responses:
         204:
           description: Success, no content
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
-          description:
-            Not Found - NoSuchTableException, table to load does not exist
+          description: Not Found - NoSuchTableException, table to load does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 TableToUpdateDoesNotExist:
-                  $ref: '#/components/examples/NoSuchTableError'
+                  $ref: "#/components/examples/NoSuchTableError"
         409:
-          description:
-            Conflict - CommitFailedException, one or more requirements failed. The client may retry.
+          description: Conflict - CommitFailedException, one or more requirements failed. The client may retry.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         500:
-          description:
-            An unknown server-side problem occurred; the commit state is unknown.
+          description: An unknown server-side problem occurred; the commit state is unknown.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
-              example: {
-                "error": {
-                  "message": "Internal Server Error",
-                  "type": "CommitStateUnknownException",
-                  "code": 500
+                $ref: "#/components/schemas/IcebergErrorResponse"
+              example:
+                {
+                  "error":
+                    {
+                      "message": "Internal Server Error",
+                      "type": "CommitStateUnknownException",
+                      "code": 500,
+                    },
                 }
-              }
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         502:
-          description:
-            A gateway or proxy received an invalid response from the upstream server; the commit state is unknown.
+          description: A gateway or proxy received an invalid response from the upstream server; the commit state is unknown.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
-              example: {
-                "error": {
-                  "message": "Invalid response from the upstream server",
-                  "type": "CommitStateUnknownException",
-                  "code": 502
+                $ref: "#/components/schemas/IcebergErrorResponse"
+              example:
+                {
+                  "error":
+                    {
+                      "message": "Invalid response from the upstream server",
+                      "type": "CommitStateUnknownException",
+                      "code": 502,
+                    },
                 }
-              }
         504:
-          description:
-            A server-side gateway timeout occurred; the commit state is unknown.
+          description: A server-side gateway timeout occurred; the commit state is unknown.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
-              example: {
-                "error": {
-                  "message": "Gateway timed out during commit",
-                  "type": "CommitStateUnknownException",
-                  "code": 504
+                $ref: "#/components/schemas/IcebergErrorResponse"
+              example:
+                {
+                  "error":
+                    {
+                      "message": "Gateway timed out during commit",
+                      "type": "CommitStateUnknownException",
+                      "code": 504,
+                    },
                 }
-              }
         5XX:
-          description:
-            A server-side problem that might not be addressable on the client.
+          description: A server-side problem that might not be addressable on the client.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
-              example: {
-                "error": {
-                  "message": "Bad Gateway",
-                  "type": "InternalServerError",
-                  "code": 502
+                $ref: "#/components/schemas/IcebergErrorResponse"
+              example:
+                {
+                  "error":
+                    {
+                      "message": "Bad Gateway",
+                      "type": "InternalServerError",
+                      "code": 502,
+                    },
                 }
-              }
 
   /v1/{prefix}/namespaces/{namespace}/views:
     parameters:
-      - $ref: '#/components/parameters/prefix'
-      - $ref: '#/components/parameters/namespace'
+      - $ref: "#/components/parameters/prefix"
+      - $ref: "#/components/parameters/namespace"
 
     get:
       tags:
@@ -1486,93 +1466,91 @@ paths:
       description: Return all view identifiers under this namespace
       operationId: listViews
       parameters:
-        - $ref: '#/components/parameters/page-token'
-        - $ref: '#/components/parameters/page-size'
+        - $ref: "#/components/parameters/page-token"
+        - $ref: "#/components/parameters/page-size"
       responses:
         200:
-          $ref: '#/components/responses/ListTablesResponse'
+          $ref: "#/components/responses/ListTablesResponse"
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
           description: Not Found - The namespace specified does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorModel'
+                $ref: "#/components/schemas/ErrorModel"
               examples:
                 NamespaceNotFound:
-                  $ref: '#/components/examples/NoSuchNamespaceError'
+                  $ref: "#/components/examples/NoSuchNamespaceError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
     post:
       tags:
         - Catalog API
       summary: Create a view in the given namespace
-      description:
-        Create a view in the given namespace.
+      description: Create a view in the given namespace.
       operationId: createView
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateViewRequest'
+              $ref: "#/components/schemas/CreateViewRequest"
       responses:
         200:
-          $ref: '#/components/responses/LoadViewResponse'
+          $ref: "#/components/responses/LoadViewResponse"
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
           description: Not Found - The namespace specified does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorModel'
+                $ref: "#/components/schemas/ErrorModel"
               examples:
                 NamespaceNotFound:
-                  $ref: '#/components/examples/NoSuchNamespaceError'
+                  $ref: "#/components/examples/NoSuchNamespaceError"
         409:
           description: Conflict - The view already exists
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorModel'
+                $ref: "#/components/schemas/ErrorModel"
               examples:
                 ViewAlreadyExists:
-                  $ref: '#/components/examples/ViewAlreadyExistsError'
+                  $ref: "#/components/examples/ViewAlreadyExistsError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
   /v1/{prefix}/namespaces/{namespace}/views/{view}:
     parameters:
-      - $ref: '#/components/parameters/prefix'
-      - $ref: '#/components/parameters/namespace'
-      - $ref: '#/components/parameters/view'
+      - $ref: "#/components/parameters/prefix"
+      - $ref: "#/components/parameters/namespace"
+      - $ref: "#/components/parameters/view"
 
     get:
       tags:
         - Catalog API
       summary: Load a view from the catalog
       operationId: loadView
-      description:
-        Load a view from the catalog.
+      description: Load a view from the catalog.
 
 
         The response contains both configuration and view metadata. The configuration, if non-empty is used
@@ -1588,29 +1566,28 @@ paths:
         key. For example, "urn:ietf:params:oauth:token-type:jwt=<JWT-token>".
       responses:
         200:
-          $ref: '#/components/responses/LoadViewResponse'
+          $ref: "#/components/responses/LoadViewResponse"
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
-          description:
-            Not Found - NoSuchViewException, view to load does not exist
+          description: Not Found - NoSuchViewException, view to load does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorModel'
+                $ref: "#/components/schemas/ErrorModel"
               examples:
                 ViewToLoadDoesNotExist:
-                  $ref: '#/components/examples/NoSuchViewError'
+                  $ref: "#/components/examples/NoSuchViewError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
     post:
       tags:
@@ -1618,101 +1595,102 @@ paths:
       summary: Replace a view
       operationId: replaceView
       parameters:
-        - $ref: '#/components/parameters/idempotency-key'
-      description:
-        Commit updates to a view.
+        - $ref: "#/components/parameters/idempotency-key"
+      description: Commit updates to a view.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CommitViewRequest'
+              $ref: "#/components/schemas/CommitViewRequest"
       responses:
         200:
-          $ref: '#/components/responses/LoadViewResponse'
+          $ref: "#/components/responses/LoadViewResponse"
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
-          description:
-            Not Found - NoSuchViewException, view to load does not exist
+          description: Not Found - NoSuchViewException, view to load does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorModel'
+                $ref: "#/components/schemas/ErrorModel"
               examples:
                 ViewToUpdateDoesNotExist:
-                  $ref: '#/components/examples/NoSuchViewError'
+                  $ref: "#/components/examples/NoSuchViewError"
         409:
-          description:
-            Conflict - CommitFailedException. The client may retry.
+          description: Conflict - CommitFailedException. The client may retry.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorModel'
+                $ref: "#/components/schemas/ErrorModel"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         500:
-          description:
-            An unknown server-side problem occurred; the commit state is unknown.
+          description: An unknown server-side problem occurred; the commit state is unknown.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorModel'
-              example: {
-                "error": {
-                  "message": "Internal Server Error",
-                  "type": "CommitStateUnknownException",
-                  "code": 500
+                $ref: "#/components/schemas/ErrorModel"
+              example:
+                {
+                  "error":
+                    {
+                      "message": "Internal Server Error",
+                      "type": "CommitStateUnknownException",
+                      "code": 500,
+                    },
                 }
-              }
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         502:
-          description:
-            A gateway or proxy received an invalid response from the upstream server; the commit state is unknown.
+          description: A gateway or proxy received an invalid response from the upstream server; the commit state is unknown.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorModel'
-              example: {
-                "error": {
-                  "message": "Invalid response from the upstream server",
-                  "type": "CommitStateUnknownException",
-                  "code": 502
+                $ref: "#/components/schemas/ErrorModel"
+              example:
+                {
+                  "error":
+                    {
+                      "message": "Invalid response from the upstream server",
+                      "type": "CommitStateUnknownException",
+                      "code": 502,
+                    },
                 }
-              }
         504:
-          description:
-            A server-side gateway timeout occurred; the commit state is unknown.
+          description: A server-side gateway timeout occurred; the commit state is unknown.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorModel'
-              example: {
-                "error": {
-                  "message": "Gateway timed out during commit",
-                  "type": "CommitStateUnknownException",
-                  "code": 504
+                $ref: "#/components/schemas/ErrorModel"
+              example:
+                {
+                  "error":
+                    {
+                      "message": "Gateway timed out during commit",
+                      "type": "CommitStateUnknownException",
+                      "code": 504,
+                    },
                 }
-              }
         5XX:
-          description:
-            A server-side problem that might not be addressable on the client.
+          description: A server-side problem that might not be addressable on the client.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorModel'
-              example: {
-                "error": {
-                  "message": "Bad Gateway",
-                  "type": "InternalServerError",
-                  "code": 502
+                $ref: "#/components/schemas/ErrorModel"
+              example:
+                {
+                  "error":
+                    {
+                      "message": "Bad Gateway",
+                      "type": "InternalServerError",
+                      "code": 502,
+                    },
                 }
-              }
 
     delete:
       tags:
@@ -1721,40 +1699,38 @@ paths:
       operationId: dropView
       description: Remove a view from the catalog
       parameters:
-        - $ref: '#/components/parameters/idempotency-key'
+        - $ref: "#/components/parameters/idempotency-key"
       responses:
         204:
           description: Success, no content
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
-          description:
-            Not Found - NoSuchViewException, view to drop does not exist
+          description: Not Found - NoSuchViewException, view to drop does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorModel'
+                $ref: "#/components/schemas/ErrorModel"
               examples:
                 ViewToDeleteDoesNotExist:
-                  $ref: '#/components/examples/NoSuchViewError'
+                  $ref: "#/components/examples/NoSuchViewError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
     head:
       tags:
         - Catalog API
       summary: Check if a view exists
       operationId: viewExists
-      description:
-        Check if a view exists within a given namespace. This request does not return a response body.
+      description: Check if a view exists within a given namespace. This request does not return a response body.
       responses:
         204:
           description: Success, no content
@@ -1765,15 +1741,15 @@ paths:
         404:
           description: Not Found
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
   /v1/{prefix}/views/rename:
     parameters:
-      - $ref: '#/components/parameters/prefix'
+      - $ref: "#/components/parameters/prefix"
 
     post:
       tags:
@@ -1784,70 +1760,68 @@ paths:
         across namespaces, but the server implementation is not required to support it.
       operationId: renameView
       parameters:
-        - $ref: '#/components/parameters/idempotency-key'
+        - $ref: "#/components/parameters/idempotency-key"
       requestBody:
         description: Current view identifier to rename and new view identifier to rename to
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RenameTableRequest'
+              $ref: "#/components/schemas/RenameTableRequest"
             examples:
               RenameViewSameNamespace:
-                $ref: '#/components/examples/RenameViewSameNamespace'
+                $ref: "#/components/examples/RenameViewSameNamespace"
         required: true
       responses:
         204:
           description: Success, no content
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
-          description:
-            Not Found
+          description: Not Found
             - NoSuchViewException, view to rename does not exist
             - NoSuchNamespaceException, The target namespace of the new identifier does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorModel'
+                $ref: "#/components/schemas/ErrorModel"
               examples:
                 ViewToRenameDoesNotExist:
-                  $ref: '#/components/examples/NoSuchViewError'
+                  $ref: "#/components/examples/NoSuchViewError"
                 NamespaceToRenameToDoesNotExist:
-                  $ref: '#/components/examples/NoSuchNamespaceError'
+                  $ref: "#/components/examples/NoSuchNamespaceError"
         406:
-          $ref: '#/components/responses/UnsupportedOperationResponse'
+          $ref: "#/components/responses/UnsupportedOperationResponse"
         409:
           description: Conflict - The target identifier to rename to already exists as a table or view
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorModel'
+                $ref: "#/components/schemas/ErrorModel"
               example:
-                $ref: '#/components/examples/ViewAlreadyExistsError'
+                $ref: "#/components/examples/ViewAlreadyExistsError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
   /v1/{prefix}/namespaces/{namespace}/register-view:
     parameters:
-      - $ref: '#/components/parameters/prefix'
-      - $ref: '#/components/parameters/namespace'
+      - $ref: "#/components/parameters/prefix"
+      - $ref: "#/components/parameters/namespace"
 
     post:
       tags:
         - Catalog API
       summary: Register a view in the catalog
       parameters:
-        - $ref: '#/components/parameters/idempotency-key'
-      description:
-        Register a view in the given namespace using given metadata file location.
+        - $ref: "#/components/parameters/idempotency-key"
+      description: Register a view in the given namespace using given metadata file location.
 
       operationId: registerView
       requestBody:
@@ -1855,40 +1829,40 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterViewRequest'
+              $ref: "#/components/schemas/RegisterViewRequest"
       responses:
         200:
-          $ref: '#/components/responses/LoadViewResponse'
+          $ref: "#/components/responses/LoadViewResponse"
         400:
-          $ref: '#/components/responses/BadRequestErrorResponse'
+          $ref: "#/components/responses/BadRequestErrorResponse"
         401:
-          $ref: '#/components/responses/UnauthorizedResponse'
+          $ref: "#/components/responses/UnauthorizedResponse"
         403:
-          $ref: '#/components/responses/ForbiddenResponse'
+          $ref: "#/components/responses/ForbiddenResponse"
         404:
           description: Not Found - The namespace specified does not exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 NamespaceNotFound:
-                  $ref: '#/components/examples/NoSuchNamespaceError'
+                  $ref: "#/components/examples/NoSuchNamespaceError"
         409:
           description: Conflict - The identifier already exists as a table or view
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IcebergErrorResponse'
+                $ref: "#/components/schemas/IcebergErrorResponse"
               examples:
                 ViewAlreadyExists:
-                  $ref: '#/components/examples/ViewAlreadyExistsError'
+                  $ref: "#/components/examples/ViewAlreadyExistsError"
         419:
-          $ref: '#/components/responses/AuthenticationTimeoutResponse'
+          $ref: "#/components/responses/AuthenticationTimeoutResponse"
         503:
-          $ref: '#/components/responses/ServiceUnavailableResponse'
+          $ref: "#/components/responses/ServiceUnavailableResponse"
         5XX:
-          $ref: '#/components/responses/ServerErrorResponse'
+          $ref: "#/components/responses/ServerErrorResponse"
 
 components:
   #######################################################
@@ -1899,8 +1873,7 @@ components:
       name: namespace
       in: path
       required: true
-      description:
-        A namespace identifier as a single string.
+      description: A namespace identifier as a single string.
         Multipart namespace parts must be separated by the namespace separator as
         indicated via the /config override `namespace-separator`, which defaults to the unit separator `0x1F` byte (url encoded `%1F`).
         To be compatible with older clients, servers must use both the advertised separator and `0x1F` as valid separators when decoding namespaces.
@@ -1978,7 +1951,7 @@ components:
       in: query
       required: false
       schema:
-        $ref: '#/components/schemas/PageToken'
+        $ref: "#/components/schemas/PageToken"
 
     page-size:
       name: pageSize
@@ -1994,8 +1967,7 @@ components:
     etag:
       name: ETag
       in: header
-      description:
-        Identifies a unique version of the table metadata.
+      description: Identifies a unique version of the table metadata.
 
         Implementations that support ETags should produce unique tags for responses that return
         different metadata content but represent the same version of table metadata.  For example,
@@ -2039,7 +2011,6 @@ components:
   # Application Schema Objects #
   ##############################
   schemas:
-
     ErrorModel:
       type: object
       description: JSON error payload returned in a response with further details on the error
@@ -2077,27 +2048,27 @@ components:
           type: object
           additionalProperties:
             type: string
-          description:
-            Properties that should be used to override client configuration; applied after defaults and client configuration.
+          description: Properties that should be used to override client configuration; applied after defaults and client configuration.
         defaults:
           type: object
           additionalProperties:
             type: string
-          description:
-            Properties that should be used as default configuration; applied before client configuration.
+          description: Properties that should be used as default configuration; applied before client configuration.
         endpoints:
           type: array
           items:
             type: string
-          description: A list of endpoints that the server supports. The format of each endpoint must be "<HTTP verb> <resource path from OpenAPI REST spec>".
+          description:
+            A list of endpoints that the server supports. The format of each endpoint must be "<HTTP verb> <resource path from OpenAPI REST spec>".
             The HTTP verb and the resource path must be separated by a space character.
-          example: [
-            "GET /v1/{prefix}/namespaces/{namespace}",
-            "GET /v1/{prefix}/namespaces",
-            "POST /v1/{prefix}/namespaces",
-            "GET /v1/{prefix}/namespaces/{namespace}/tables/{table}",
-            "GET /v1/{prefix}/namespaces/{namespace}/views/{view}"
-          ]
+          example:
+            [
+              "GET /v1/{prefix}/namespaces/{namespace}",
+              "GET /v1/{prefix}/namespaces",
+              "POST /v1/{prefix}/namespaces",
+              "GET /v1/{prefix}/namespaces/{namespace}/tables/{table}",
+              "GET /v1/{prefix}/namespaces/{namespace}/views/{view}",
+            ]
         idempotency-key-lifetime:
           type: string
           format: duration
@@ -2117,12 +2088,12 @@ components:
         - namespace
       properties:
         namespace:
-          $ref: '#/components/schemas/Namespace'
+          $ref: "#/components/schemas/Namespace"
         properties:
           type: object
           description: Configured string to string map of properties for the namespace
           example: { "owner": "Hank Bendickson" }
-          default: { }
+          default: {}
           additionalProperties:
             type: string
 
@@ -2134,7 +2105,7 @@ components:
           uniqueItems: true
           items:
             type: string
-          example: [ "department", "access_group" ]
+          example: ["department", "access_group"]
         updates:
           type: object
           example: { "owner": "Hank Bendickson" }
@@ -2148,16 +2119,16 @@ components:
         - destination
       properties:
         source:
-          $ref: '#/components/schemas/TableIdentifier'
+          $ref: "#/components/schemas/TableIdentifier"
         destination:
-          $ref: '#/components/schemas/TableIdentifier'
+          $ref: "#/components/schemas/TableIdentifier"
 
     Namespace:
       description: Reference to one or more levels of a namespace
       type: array
       items:
         type: string
-      example: [ "accounting", "tax" ]
+      example: ["accounting", "tax"]
 
     PageToken:
       description:
@@ -2191,7 +2162,7 @@ components:
         - name
       properties:
         namespace:
-          $ref: '#/components/schemas/Namespace'
+          $ref: "#/components/schemas/Namespace"
         name:
           type: string
           nullable: false
@@ -2217,7 +2188,7 @@ components:
         name:
           type: string
         type:
-          $ref: '#/components/schemas/Type'
+          $ref: "#/components/schemas/Type"
         required:
           type: boolean
         doc:
@@ -2239,7 +2210,7 @@ components:
         fields:
           type: array
           items:
-            $ref: '#/components/schemas/StructField'
+            $ref: "#/components/schemas/StructField"
 
     ListType:
       type: object
@@ -2255,7 +2226,7 @@ components:
         element-id:
           type: integer
         element:
-          $ref: '#/components/schemas/Type'
+          $ref: "#/components/schemas/Type"
         element-required:
           type: boolean
 
@@ -2275,24 +2246,24 @@ components:
         key-id:
           type: integer
         key:
-          $ref: '#/components/schemas/Type'
+          $ref: "#/components/schemas/Type"
         value-id:
           type: integer
         value:
-          $ref: '#/components/schemas/Type'
+          $ref: "#/components/schemas/Type"
         value-required:
           type: boolean
 
     Type:
       oneOf:
-        - $ref: '#/components/schemas/PrimitiveType'
-        - $ref: '#/components/schemas/StructType'
-        - $ref: '#/components/schemas/ListType'
-        - $ref: '#/components/schemas/MapType'
+        - $ref: "#/components/schemas/PrimitiveType"
+        - $ref: "#/components/schemas/StructType"
+        - $ref: "#/components/schemas/ListType"
+        - $ref: "#/components/schemas/MapType"
 
     Schema:
       allOf:
-        - $ref: '#/components/schemas/StructType'
+        - $ref: "#/components/schemas/StructType"
         - type: object
           properties:
             schema-id:
@@ -2305,13 +2276,13 @@ components:
 
     Expression:
       oneOf:
-        - $ref: '#/components/schemas/TrueExpression'
-        - $ref: '#/components/schemas/FalseExpression'
-        - $ref: '#/components/schemas/AndOrExpression'
-        - $ref: '#/components/schemas/NotExpression'
-        - $ref: '#/components/schemas/SetExpression'
-        - $ref: '#/components/schemas/LiteralExpression'
-        - $ref: '#/components/schemas/UnaryExpression'
+        - $ref: "#/components/schemas/TrueExpression"
+        - $ref: "#/components/schemas/FalseExpression"
+        - $ref: "#/components/schemas/AndOrExpression"
+        - $ref: "#/components/schemas/NotExpression"
+        - $ref: "#/components/schemas/SetExpression"
+        - $ref: "#/components/schemas/LiteralExpression"
+        - $ref: "#/components/schemas/UnaryExpression"
 
     ExpressionType:
       type: string
@@ -2342,7 +2313,7 @@ components:
         - type
       properties:
         type:
-          $ref: '#/components/schemas/ExpressionType'
+          $ref: "#/components/schemas/ExpressionType"
           const: "true"
 
     FalseExpression:
@@ -2351,7 +2322,7 @@ components:
         - type
       properties:
         type:
-          $ref: '#/components/schemas/ExpressionType'
+          $ref: "#/components/schemas/ExpressionType"
           const: "false"
 
     AndOrExpression:
@@ -2362,12 +2333,12 @@ components:
         - right
       properties:
         type:
-          $ref: '#/components/schemas/ExpressionType'
+          $ref: "#/components/schemas/ExpressionType"
           enum: ["and", "or"]
         left:
-          $ref: '#/components/schemas/Expression'
+          $ref: "#/components/schemas/Expression"
         right:
-          $ref: '#/components/schemas/Expression'
+          $ref: "#/components/schemas/Expression"
 
     NotExpression:
       type: object
@@ -2376,10 +2347,10 @@ components:
         - child
       properties:
         type:
-          $ref: '#/components/schemas/ExpressionType'
+          $ref: "#/components/schemas/ExpressionType"
           const: "not"
         child:
-          $ref: '#/components/schemas/Expression'
+          $ref: "#/components/schemas/Expression"
 
     UnaryExpression:
       type: object
@@ -2388,10 +2359,10 @@ components:
         - term
       properties:
         type:
-          $ref: '#/components/schemas/ExpressionType'
+          $ref: "#/components/schemas/ExpressionType"
           enum: ["is-null", "not-null", "is-nan", "not-nan"]
         term:
-          $ref: '#/components/schemas/Term'
+          $ref: "#/components/schemas/Term"
 
     LiteralExpression:
       type: object
@@ -2401,12 +2372,22 @@ components:
         - value
       properties:
         type:
-          $ref: '#/components/schemas/ExpressionType'
-          enum: ["lt", "lt-eq", "gt", "gt-eq", "eq", "not-eq", "starts-with", "not-starts-with"]
+          $ref: "#/components/schemas/ExpressionType"
+          enum:
+            [
+              "lt",
+              "lt-eq",
+              "gt",
+              "gt-eq",
+              "eq",
+              "not-eq",
+              "starts-with",
+              "not-starts-with",
+            ]
         term:
-          $ref: '#/components/schemas/Term'
+          $ref: "#/components/schemas/Term"
         value:
-          $ref: '#/components/schemas/PrimitiveTypeValue'
+          $ref: "#/components/schemas/PrimitiveTypeValue"
 
     SetExpression:
       type: object
@@ -2416,19 +2397,19 @@ components:
         - values
       properties:
         type:
-          $ref: '#/components/schemas/ExpressionType'
+          $ref: "#/components/schemas/ExpressionType"
           enum: ["in", "not-in"]
         term:
-          $ref: '#/components/schemas/Term'
+          $ref: "#/components/schemas/Term"
         values:
           type: array
           items:
-            $ref: '#/components/schemas/PrimitiveTypeValue'
+            $ref: "#/components/schemas/PrimitiveTypeValue"
 
     Term:
       oneOf:
-        - $ref: '#/components/schemas/Reference'
-        - $ref: '#/components/schemas/TransformTerm'
+        - $ref: "#/components/schemas/Reference"
+        - $ref: "#/components/schemas/TransformTerm"
 
     Reference:
       type: string
@@ -2446,9 +2427,9 @@ components:
           type: string
           const: "transform"
         transform:
-          $ref: '#/components/schemas/Transform'
+          $ref: "#/components/schemas/Transform"
         term:
-          $ref: '#/components/schemas/Reference'
+          $ref: "#/components/schemas/Reference"
 
     Transform:
       type: string
@@ -2475,7 +2456,7 @@ components:
         name:
           type: string
         transform:
-          $ref: '#/components/schemas/Transform'
+          $ref: "#/components/schemas/Transform"
 
     PartitionSpec:
       type: object
@@ -2488,7 +2469,7 @@ components:
         fields:
           type: array
           items:
-            $ref: '#/components/schemas/PartitionField'
+            $ref: "#/components/schemas/PartitionField"
 
     SortDirection:
       type: string
@@ -2509,11 +2490,11 @@ components:
         source-id:
           type: integer
         transform:
-          $ref: '#/components/schemas/Transform'
+          $ref: "#/components/schemas/Transform"
         direction:
-          $ref: '#/components/schemas/SortDirection'
+          $ref: "#/components/schemas/SortDirection"
         null-order:
-          $ref: '#/components/schemas/NullOrder'
+          $ref: "#/components/schemas/NullOrder"
 
     SortOrder:
       type: object
@@ -2527,7 +2508,7 @@ components:
         fields:
           type: array
           items:
-            $ref: '#/components/schemas/SortField'
+            $ref: "#/components/schemas/SortField"
 
     EncryptedKey:
       type: object
@@ -2539,7 +2520,7 @@ components:
           type: string
         encrypted-key-metadata:
           type: string
-          format: byte  # for compatibility
+          format: byte # for compatibility
           contentEncoding: base64
         encrypted-by-id:
           type: string
@@ -2616,7 +2597,7 @@ components:
     SnapshotReferences:
       type: object
       additionalProperties:
-        $ref: '#/components/schemas/SnapshotReference'
+        $ref: "#/components/schemas/SnapshotReference"
 
     SnapshotLog:
       type: array
@@ -2676,7 +2657,7 @@ components:
         schemas:
           type: array
           items:
-            $ref: '#/components/schemas/Schema'
+            $ref: "#/components/schemas/Schema"
         current-schema-id:
           type: integer
         last-column-id:
@@ -2685,7 +2666,7 @@ components:
         partition-specs:
           type: array
           items:
-            $ref: '#/components/schemas/PartitionSpec'
+            $ref: "#/components/schemas/PartitionSpec"
         default-spec-id:
           type: integer
         last-partition-id:
@@ -2694,21 +2675,21 @@ components:
         sort-orders:
           type: array
           items:
-            $ref: '#/components/schemas/SortOrder'
+            $ref: "#/components/schemas/SortOrder"
         default-sort-order-id:
           type: integer
         # encryption
         encryption-keys:
           type: array
           items:
-            $ref: '#/components/schemas/EncryptedKey'
+            $ref: "#/components/schemas/EncryptedKey"
         # snapshot tracking
         snapshots:
           type: array
           items:
-            $ref: '#/components/schemas/Snapshot'
+            $ref: "#/components/schemas/Snapshot"
         refs:
-          $ref: '#/components/schemas/SnapshotReferences'
+          $ref: "#/components/schemas/SnapshotReferences"
         current-snapshot-id:
           type: integer
           format: int64
@@ -2717,18 +2698,18 @@ components:
           format: int64
         # logs
         snapshot-log:
-          $ref: '#/components/schemas/SnapshotLog'
+          $ref: "#/components/schemas/SnapshotLog"
         metadata-log:
-          $ref: '#/components/schemas/MetadataLog'
+          $ref: "#/components/schemas/MetadataLog"
         # statistics
         statistics:
           type: array
           items:
-            $ref: '#/components/schemas/StatisticsFile'
+            $ref: "#/components/schemas/StatisticsFile"
         partition-statistics:
           type: array
           items:
-            $ref: '#/components/schemas/PartitionStatisticsFile'
+            $ref: "#/components/schemas/PartitionStatisticsFile"
 
     SQLViewRepresentation:
       type: object
@@ -2746,7 +2727,7 @@ components:
 
     ViewRepresentation:
       oneOf:
-        - $ref: '#/components/schemas/SQLViewRepresentation'
+        - $ref: "#/components/schemas/SQLViewRepresentation"
 
     ViewHistoryEntry:
       type: object
@@ -2785,11 +2766,11 @@ components:
         representations:
           type: array
           items:
-            $ref: '#/components/schemas/ViewRepresentation'
+            $ref: "#/components/schemas/ViewRepresentation"
         default-catalog:
           type: string
         default-namespace:
-          $ref: '#/components/schemas/Namespace'
+          $ref: "#/components/schemas/Namespace"
 
     ViewMetadata:
       type: object
@@ -2815,15 +2796,15 @@ components:
         versions:
           type: array
           items:
-            $ref: '#/components/schemas/ViewVersion'
+            $ref: "#/components/schemas/ViewVersion"
         version-log:
           type: array
           items:
-            $ref: '#/components/schemas/ViewHistoryEntry'
+            $ref: "#/components/schemas/ViewHistoryEntry"
         schemas:
           type: array
           items:
-            $ref: '#/components/schemas/Schema'
+            $ref: "#/components/schemas/Schema"
         properties:
           type: object
           additionalProperties:
@@ -2833,31 +2814,31 @@ components:
       discriminator:
         propertyName: action
         mapping:
-          assign-uuid: '#/components/schemas/AssignUUIDUpdate'
-          upgrade-format-version: '#/components/schemas/UpgradeFormatVersionUpdate'
-          add-schema: '#/components/schemas/AddSchemaUpdate'
-          set-current-schema: '#/components/schemas/SetCurrentSchemaUpdate'
-          add-spec: '#/components/schemas/AddPartitionSpecUpdate'
-          set-default-spec: '#/components/schemas/SetDefaultSpecUpdate'
-          add-sort-order: '#/components/schemas/AddSortOrderUpdate'
-          set-default-sort-order: '#/components/schemas/SetDefaultSortOrderUpdate'
-          add-snapshot: '#/components/schemas/AddSnapshotUpdate'
-          set-snapshot-ref: '#/components/schemas/SetSnapshotRefUpdate'
-          remove-snapshots: '#/components/schemas/RemoveSnapshotsUpdate'
-          remove-snapshot-ref: '#/components/schemas/RemoveSnapshotRefUpdate'
-          set-location: '#/components/schemas/SetLocationUpdate'
-          set-properties: '#/components/schemas/SetPropertiesUpdate'
-          remove-properties: '#/components/schemas/RemovePropertiesUpdate'
-          add-view-version: '#/components/schemas/AddViewVersionUpdate'
-          set-current-view-version: '#/components/schemas/SetCurrentViewVersionUpdate'
-          set-statistics: '#/components/schemas/SetStatisticsUpdate'
-          remove-statistics: '#/components/schemas/RemoveStatisticsUpdate'
-          set-partition-statistics: '#/components/schemas/SetPartitionStatisticsUpdate'
-          remove-partition-statistics: '#/components/schemas/RemovePartitionStatisticsUpdate'
-          remove-partition-specs: '#/components/schemas/RemovePartitionSpecsUpdate'
-          remove-schemas: '#/components/schemas/RemoveSchemasUpdate'
-          add-encryption-key: '#/components/schemas/AddEncryptionKeyUpdate'
-          remove-encryption-key: '#/components/schemas/RemoveEncryptionKeyUpdate'
+          assign-uuid: "#/components/schemas/AssignUUIDUpdate"
+          upgrade-format-version: "#/components/schemas/UpgradeFormatVersionUpdate"
+          add-schema: "#/components/schemas/AddSchemaUpdate"
+          set-current-schema: "#/components/schemas/SetCurrentSchemaUpdate"
+          add-spec: "#/components/schemas/AddPartitionSpecUpdate"
+          set-default-spec: "#/components/schemas/SetDefaultSpecUpdate"
+          add-sort-order: "#/components/schemas/AddSortOrderUpdate"
+          set-default-sort-order: "#/components/schemas/SetDefaultSortOrderUpdate"
+          add-snapshot: "#/components/schemas/AddSnapshotUpdate"
+          set-snapshot-ref: "#/components/schemas/SetSnapshotRefUpdate"
+          remove-snapshots: "#/components/schemas/RemoveSnapshotsUpdate"
+          remove-snapshot-ref: "#/components/schemas/RemoveSnapshotRefUpdate"
+          set-location: "#/components/schemas/SetLocationUpdate"
+          set-properties: "#/components/schemas/SetPropertiesUpdate"
+          remove-properties: "#/components/schemas/RemovePropertiesUpdate"
+          add-view-version: "#/components/schemas/AddViewVersionUpdate"
+          set-current-view-version: "#/components/schemas/SetCurrentViewVersionUpdate"
+          set-statistics: "#/components/schemas/SetStatisticsUpdate"
+          remove-statistics: "#/components/schemas/RemoveStatisticsUpdate"
+          set-partition-statistics: "#/components/schemas/SetPartitionStatisticsUpdate"
+          remove-partition-statistics: "#/components/schemas/RemovePartitionStatisticsUpdate"
+          remove-partition-specs: "#/components/schemas/RemovePartitionSpecsUpdate"
+          remove-schemas: "#/components/schemas/RemoveSchemasUpdate"
+          add-encryption-key: "#/components/schemas/AddEncryptionKeyUpdate"
+          remove-encryption-key: "#/components/schemas/RemoveEncryptionKeyUpdate"
       type: object
       required:
         - action
@@ -2868,7 +2849,7 @@ components:
     AssignUUIDUpdate:
       description: Assigning a UUID to a table/view should only be done when creating the table/view. It is not safe to re-assign the UUID if a table/view already has a UUID assigned
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - uuid
       properties:
@@ -2880,7 +2861,7 @@ components:
 
     UpgradeFormatVersionUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - format-version
       properties:
@@ -2892,7 +2873,7 @@ components:
 
     AddSchemaUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - schema
       properties:
@@ -2900,7 +2881,7 @@ components:
           type: string
           const: "add-schema"
         schema:
-          $ref: '#/components/schemas/Schema'
+          $ref: "#/components/schemas/Schema"
         last-column-id:
           type: integer
           deprecated: true
@@ -2913,7 +2894,7 @@ components:
 
     SetCurrentSchemaUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - schema-id
       properties:
@@ -2926,7 +2907,7 @@ components:
 
     AddPartitionSpecUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - spec
       properties:
@@ -2934,11 +2915,11 @@ components:
           type: string
           const: "add-spec"
         spec:
-          $ref: '#/components/schemas/PartitionSpec'
+          $ref: "#/components/schemas/PartitionSpec"
 
     SetDefaultSpecUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - spec-id
       properties:
@@ -2951,7 +2932,7 @@ components:
 
     AddSortOrderUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - sort-order
       properties:
@@ -2959,11 +2940,11 @@ components:
           type: string
           const: "add-sort-order"
         sort-order:
-          $ref: '#/components/schemas/SortOrder'
+          $ref: "#/components/schemas/SortOrder"
 
     SetDefaultSortOrderUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - sort-order-id
       properties:
@@ -2976,7 +2957,7 @@ components:
 
     AddSnapshotUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - snapshot
       properties:
@@ -2984,12 +2965,12 @@ components:
           type: string
           const: "add-snapshot"
         snapshot:
-          $ref: '#/components/schemas/Snapshot'
+          $ref: "#/components/schemas/Snapshot"
 
     SetSnapshotRefUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
-        - $ref: '#/components/schemas/SnapshotReference'
+        - $ref: "#/components/schemas/BaseUpdate"
+        - $ref: "#/components/schemas/SnapshotReference"
       required:
         - ref-name
       properties:
@@ -3001,7 +2982,7 @@ components:
 
     RemoveSnapshotsUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - snapshot-ids
       properties:
@@ -3016,7 +2997,7 @@ components:
 
     RemoveSnapshotRefUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - ref-name
       properties:
@@ -3028,7 +3009,7 @@ components:
 
     SetLocationUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - location
       properties:
@@ -3040,7 +3021,7 @@ components:
 
     SetPropertiesUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - updates
       properties:
@@ -3054,7 +3035,7 @@ components:
 
     RemovePropertiesUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - removals
       properties:
@@ -3068,7 +3049,7 @@ components:
 
     AddViewVersionUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - view-version
       properties:
@@ -3076,11 +3057,11 @@ components:
           type: string
           const: "add-view-version"
         view-version:
-          $ref: '#/components/schemas/ViewVersion'
+          $ref: "#/components/schemas/ViewVersion"
 
     SetCurrentViewVersionUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - view-version-id
       properties:
@@ -3093,7 +3074,7 @@ components:
 
     SetStatisticsUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - statistics
       properties:
@@ -3108,11 +3089,11 @@ components:
             This optional field is **DEPRECATED for REMOVAL** since it contains redundant information.
             Clients should use the `statistics.snapshot-id` field instead.
         statistics:
-          $ref: '#/components/schemas/StatisticsFile'
+          $ref: "#/components/schemas/StatisticsFile"
 
     RemoveStatisticsUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - snapshot-id
       properties:
@@ -3125,7 +3106,7 @@ components:
 
     SetPartitionStatisticsUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - partition-statistics
       properties:
@@ -3133,11 +3114,11 @@ components:
           type: string
           const: "set-partition-statistics"
         partition-statistics:
-          $ref: '#/components/schemas/PartitionStatisticsFile'
+          $ref: "#/components/schemas/PartitionStatisticsFile"
 
     RemovePartitionStatisticsUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - snapshot-id
       properties:
@@ -3150,7 +3131,7 @@ components:
 
     RemovePartitionSpecsUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - spec-ids
       properties:
@@ -3164,7 +3145,7 @@ components:
 
     RemoveSchemasUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - schema-ids
       properties:
@@ -3178,7 +3159,7 @@ components:
 
     AddEncryptionKeyUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - encryption-key
       properties:
@@ -3186,11 +3167,11 @@ components:
           type: string
           const: "add-encryption-key"
         encryption-key:
-          $ref: '#/components/schemas/EncryptedKey'
+          $ref: "#/components/schemas/EncryptedKey"
 
     RemoveEncryptionKeyUpdate:
       allOf:
-        - $ref: '#/components/schemas/BaseUpdate'
+        - $ref: "#/components/schemas/BaseUpdate"
       required:
         - key-id
       properties:
@@ -3202,52 +3183,52 @@ components:
 
     TableUpdate:
       anyOf:
-        - $ref: '#/components/schemas/AssignUUIDUpdate'
-        - $ref: '#/components/schemas/UpgradeFormatVersionUpdate'
-        - $ref: '#/components/schemas/AddSchemaUpdate'
-        - $ref: '#/components/schemas/SetCurrentSchemaUpdate'
-        - $ref: '#/components/schemas/AddPartitionSpecUpdate'
-        - $ref: '#/components/schemas/SetDefaultSpecUpdate'
-        - $ref: '#/components/schemas/AddSortOrderUpdate'
-        - $ref: '#/components/schemas/SetDefaultSortOrderUpdate'
-        - $ref: '#/components/schemas/AddSnapshotUpdate'
-        - $ref: '#/components/schemas/SetSnapshotRefUpdate'
-        - $ref: '#/components/schemas/RemoveSnapshotsUpdate'
-        - $ref: '#/components/schemas/RemoveSnapshotRefUpdate'
-        - $ref: '#/components/schemas/SetLocationUpdate'
-        - $ref: '#/components/schemas/SetPropertiesUpdate'
-        - $ref: '#/components/schemas/RemovePropertiesUpdate'
-        - $ref: '#/components/schemas/SetStatisticsUpdate'
-        - $ref: '#/components/schemas/RemoveStatisticsUpdate'
-        - $ref: '#/components/schemas/RemovePartitionSpecsUpdate'
-        - $ref: '#/components/schemas/RemoveSchemasUpdate'
-        - $ref: '#/components/schemas/AddEncryptionKeyUpdate'
-        - $ref: '#/components/schemas/RemoveEncryptionKeyUpdate'
+        - $ref: "#/components/schemas/AssignUUIDUpdate"
+        - $ref: "#/components/schemas/UpgradeFormatVersionUpdate"
+        - $ref: "#/components/schemas/AddSchemaUpdate"
+        - $ref: "#/components/schemas/SetCurrentSchemaUpdate"
+        - $ref: "#/components/schemas/AddPartitionSpecUpdate"
+        - $ref: "#/components/schemas/SetDefaultSpecUpdate"
+        - $ref: "#/components/schemas/AddSortOrderUpdate"
+        - $ref: "#/components/schemas/SetDefaultSortOrderUpdate"
+        - $ref: "#/components/schemas/AddSnapshotUpdate"
+        - $ref: "#/components/schemas/SetSnapshotRefUpdate"
+        - $ref: "#/components/schemas/RemoveSnapshotsUpdate"
+        - $ref: "#/components/schemas/RemoveSnapshotRefUpdate"
+        - $ref: "#/components/schemas/SetLocationUpdate"
+        - $ref: "#/components/schemas/SetPropertiesUpdate"
+        - $ref: "#/components/schemas/RemovePropertiesUpdate"
+        - $ref: "#/components/schemas/SetStatisticsUpdate"
+        - $ref: "#/components/schemas/RemoveStatisticsUpdate"
+        - $ref: "#/components/schemas/RemovePartitionSpecsUpdate"
+        - $ref: "#/components/schemas/RemoveSchemasUpdate"
+        - $ref: "#/components/schemas/AddEncryptionKeyUpdate"
+        - $ref: "#/components/schemas/RemoveEncryptionKeyUpdate"
 
     ViewUpdate:
       anyOf:
-        - $ref: '#/components/schemas/AssignUUIDUpdate'
-        - $ref: '#/components/schemas/UpgradeFormatVersionUpdate'
-        - $ref: '#/components/schemas/AddSchemaUpdate'
-        - $ref: '#/components/schemas/SetLocationUpdate'
-        - $ref: '#/components/schemas/SetPropertiesUpdate'
-        - $ref: '#/components/schemas/RemovePropertiesUpdate'
-        - $ref: '#/components/schemas/AddViewVersionUpdate'
-        - $ref: '#/components/schemas/SetCurrentViewVersionUpdate'
+        - $ref: "#/components/schemas/AssignUUIDUpdate"
+        - $ref: "#/components/schemas/UpgradeFormatVersionUpdate"
+        - $ref: "#/components/schemas/AddSchemaUpdate"
+        - $ref: "#/components/schemas/SetLocationUpdate"
+        - $ref: "#/components/schemas/SetPropertiesUpdate"
+        - $ref: "#/components/schemas/RemovePropertiesUpdate"
+        - $ref: "#/components/schemas/AddViewVersionUpdate"
+        - $ref: "#/components/schemas/SetCurrentViewVersionUpdate"
 
     TableRequirement:
       type: object
       discriminator:
         propertyName: type
         mapping:
-          assert-create: '#/components/schemas/AssertCreate'
-          assert-table-uuid: '#/components/schemas/AssertTableUUID'
-          assert-ref-snapshot-id: '#/components/schemas/AssertRefSnapshotId'
-          assert-last-assigned-field-id: '#/components/schemas/AssertLastAssignedFieldId'
-          assert-current-schema-id: '#/components/schemas/AssertCurrentSchemaId'
-          assert-last-assigned-partition-id: '#/components/schemas/AssertLastAssignedPartitionId'
-          assert-default-spec-id: '#/components/schemas/AssertDefaultSpecId'
-          assert-default-sort-order-id: '#/components/schemas/AssertDefaultSortOrderId'
+          assert-create: "#/components/schemas/AssertCreate"
+          assert-table-uuid: "#/components/schemas/AssertTableUUID"
+          assert-ref-snapshot-id: "#/components/schemas/AssertRefSnapshotId"
+          assert-last-assigned-field-id: "#/components/schemas/AssertLastAssignedFieldId"
+          assert-current-schema-id: "#/components/schemas/AssertCurrentSchemaId"
+          assert-last-assigned-partition-id: "#/components/schemas/AssertLastAssignedPartitionId"
+          assert-default-spec-id: "#/components/schemas/AssertDefaultSpecId"
+          assert-default-sort-order-id: "#/components/schemas/AssertDefaultSortOrderId"
       properties:
         type:
           type: string
@@ -3258,7 +3239,7 @@ components:
       type: object
       description: The table must not already exist; used for create transactions
       allOf:
-        - $ref: '#/components/schemas/TableRequirement'
+        - $ref: "#/components/schemas/TableRequirement"
       required:
         - type
       properties:
@@ -3269,7 +3250,7 @@ components:
     AssertTableUUID:
       description: The table UUID must match the requirement's `uuid`
       allOf:
-        - $ref: '#/components/schemas/TableRequirement'
+        - $ref: "#/components/schemas/TableRequirement"
       required:
         - type
         - uuid
@@ -3286,7 +3267,7 @@ components:
         The `snapshot-id` field is required in this object, but in the case of a `null`
         the ref must not already exist.
       allOf:
-        - $ref: '#/components/schemas/TableRequirement'
+        - $ref: "#/components/schemas/TableRequirement"
       required:
         - ref
         - snapshot-id
@@ -3302,10 +3283,9 @@ components:
           nullable: true
 
     AssertLastAssignedFieldId:
-      description:
-        The table's last assigned column id must match the requirement's `last-assigned-field-id`
+      description: The table's last assigned column id must match the requirement's `last-assigned-field-id`
       allOf:
-        - $ref: '#/components/schemas/TableRequirement'
+        - $ref: "#/components/schemas/TableRequirement"
       required:
         - last-assigned-field-id
       properties:
@@ -3316,10 +3296,9 @@ components:
           type: integer
 
     AssertCurrentSchemaId:
-      description:
-        The table's current schema id must match the requirement's `current-schema-id`
+      description: The table's current schema id must match the requirement's `current-schema-id`
       allOf:
-        - $ref: '#/components/schemas/TableRequirement'
+        - $ref: "#/components/schemas/TableRequirement"
       required:
         - current-schema-id
       properties:
@@ -3330,10 +3309,9 @@ components:
           type: integer
 
     AssertLastAssignedPartitionId:
-      description:
-        The table's last assigned partition id must match the requirement's `last-assigned-partition-id`
+      description: The table's last assigned partition id must match the requirement's `last-assigned-partition-id`
       allOf:
-        - $ref: '#/components/schemas/TableRequirement'
+        - $ref: "#/components/schemas/TableRequirement"
       required:
         - last-assigned-partition-id
       properties:
@@ -3344,10 +3322,9 @@ components:
           type: integer
 
     AssertDefaultSpecId:
-      description:
-        The table's default spec id must match the requirement's `default-spec-id`
+      description: The table's default spec id must match the requirement's `default-spec-id`
       allOf:
-        - $ref: '#/components/schemas/TableRequirement'
+        - $ref: "#/components/schemas/TableRequirement"
       required:
         - default-spec-id
       properties:
@@ -3358,10 +3335,9 @@ components:
           type: integer
 
     AssertDefaultSortOrderId:
-      description:
-        The table's default sort order id must match the requirement's `default-sort-order-id`
+      description: The table's default sort order id must match the requirement's `default-sort-order-id`
       allOf:
-        - $ref: '#/components/schemas/TableRequirement'
+        - $ref: "#/components/schemas/TableRequirement"
       required:
         - default-sort-order-id
       properties:
@@ -3376,9 +3352,9 @@ components:
       discriminator:
         propertyName: type
         mapping:
-          assert-view-uuid: '#/components/schemas/AssertViewUUID'
+          assert-view-uuid: "#/components/schemas/AssertViewUUID"
       oneOf:
-        - $ref: '#/components/schemas/AssertViewUUID'
+        - $ref: "#/components/schemas/AssertViewUUID"
 
     AssertViewUUID:
       description: The view UUID must match the requirement's `uuid`
@@ -3400,7 +3376,8 @@ components:
       properties:
         prefix:
           type: string
-          description: Indicates a storage location prefix where the credential is relevant. Clients should choose the most
+          description:
+            Indicates a storage location prefix where the credential is relevant. Clients should choose the most
             specific prefix (by selecting the longest prefix) if several credentials of the same type are available.
         config:
           type: object
@@ -3415,7 +3392,7 @@ components:
         storage-credentials:
           type: array
           items:
-            $ref: '#/components/schemas/StorageCredential'
+            $ref: "#/components/schemas/StorageCredential"
 
     LoadTableResult:
       description: |
@@ -3458,7 +3435,7 @@ components:
           description: May be null if the table is staged as part of a transaction
           nullable: true
         metadata:
-          $ref: '#/components/schemas/TableMetadata'
+          $ref: "#/components/schemas/TableMetadata"
         config:
           type: object
           additionalProperties:
@@ -3466,7 +3443,7 @@ components:
         storage-credentials:
           type: array
           items:
-            $ref: '#/components/schemas/StorageCredential'
+            $ref: "#/components/schemas/StorageCredential"
 
     ScanTasks:
       type: object
@@ -3492,27 +3469,27 @@ components:
           description: Delete files referenced by file scan tasks
           type: array
           items:
-            $ref: '#/components/schemas/DeleteFile'
+            $ref: "#/components/schemas/DeleteFile"
         file-scan-tasks:
           type: array
           items:
-            $ref: '#/components/schemas/FileScanTask'
+            $ref: "#/components/schemas/FileScanTask"
         plan-tasks:
           type: array
           items:
-            $ref: '#/components/schemas/PlanTask'
+            $ref: "#/components/schemas/PlanTask"
 
     CompletedPlanningResult:
       type: object
       description: Completed server-side planning result
       allOf:
-        - $ref: '#/components/schemas/ScanTasks'
+        - $ref: "#/components/schemas/ScanTasks"
         - type: object
           required:
             - status
           properties:
             status:
-              $ref: '#/components/schemas/PlanStatus'
+              $ref: "#/components/schemas/PlanStatus"
               const: "completed"
             storage-credentials:
               type: array
@@ -3523,12 +3500,12 @@ components:
                 planning response, the expectation is for the client to use these credentials
                 to read the files returned in the FileScanTasks as part of the scan result.
               items:
-                $ref: '#/components/schemas/StorageCredential'
+                $ref: "#/components/schemas/StorageCredential"
 
     CompletedPlanningWithIDResult:
       type: object
       allOf:
-        - $ref: '#/components/schemas/CompletedPlanningResult'
+        - $ref: "#/components/schemas/CompletedPlanningResult"
         - type: object
           required:
             - plan-id
@@ -3541,13 +3518,13 @@ components:
       type: object
       description: Failed server-side planning result
       allOf:
-        - $ref: '#/components/schemas/IcebergErrorResponse'
+        - $ref: "#/components/schemas/IcebergErrorResponse"
         - type: object
           required:
             - status
           properties:
             status:
-              $ref: '#/components/schemas/PlanStatus'
+              $ref: "#/components/schemas/PlanStatus"
               const: "failed"
 
     AsyncPlanningResult:
@@ -3557,7 +3534,7 @@ components:
         - plan-id
       properties:
         status:
-          $ref: '#/components/schemas/PlanStatus'
+          $ref: "#/components/schemas/PlanStatus"
           const: "submitted"
         plan-id:
           description: ID used to track a planning request
@@ -3570,7 +3547,7 @@ components:
         - status
       properties:
         status:
-          $ref: '#/components/schemas/PlanStatus'
+          $ref: "#/components/schemas/PlanStatus"
           enum: ["submitted", "cancelled"]
 
     PlanStatus:
@@ -3584,14 +3561,14 @@ components:
       discriminator:
         propertyName: status
         mapping:
-          completed: '#/components/schemas/CompletedPlanningResult'
-          submitted: '#/components/schemas/EmptyPlanningResult'
-          cancelled: '#/components/schemas/EmptyPlanningResult'
-          failed: '#/components/schemas/FailedPlanningResult'
+          completed: "#/components/schemas/CompletedPlanningResult"
+          submitted: "#/components/schemas/EmptyPlanningResult"
+          cancelled: "#/components/schemas/EmptyPlanningResult"
+          failed: "#/components/schemas/FailedPlanningResult"
       oneOf:
-        - $ref: '#/components/schemas/CompletedPlanningResult'
-        - $ref: '#/components/schemas/FailedPlanningResult'
-        - $ref: '#/components/schemas/EmptyPlanningResult'
+        - $ref: "#/components/schemas/CompletedPlanningResult"
+        - $ref: "#/components/schemas/FailedPlanningResult"
+        - $ref: "#/components/schemas/EmptyPlanningResult"
 
     PlanTableScanResult:
       type: object
@@ -3599,21 +3576,21 @@ components:
       discriminator:
         propertyName: status
         mapping:
-          completed: '#/components/schemas/CompletedPlanningWithIDResult'
-          submitted: '#/components/schemas/AsyncPlanningResult'
-          cancelled: '#/components/schemas/EmptyPlanningResult'
-          failed: '#/components/schemas/FailedPlanningResult'
+          completed: "#/components/schemas/CompletedPlanningWithIDResult"
+          submitted: "#/components/schemas/AsyncPlanningResult"
+          cancelled: "#/components/schemas/EmptyPlanningResult"
+          failed: "#/components/schemas/FailedPlanningResult"
       oneOf:
-        - $ref: '#/components/schemas/CompletedPlanningWithIDResult'
-        - $ref: '#/components/schemas/FailedPlanningResult'
-        - $ref: '#/components/schemas/AsyncPlanningResult'
-        - $ref: '#/components/schemas/EmptyPlanningResult'
+        - $ref: "#/components/schemas/CompletedPlanningWithIDResult"
+        - $ref: "#/components/schemas/FailedPlanningResult"
+        - $ref: "#/components/schemas/AsyncPlanningResult"
+        - $ref: "#/components/schemas/EmptyPlanningResult"
 
     FetchScanTasksResult:
       type: object
       description: Response schema for fetchScanTasks
       allOf:
-        - $ref: '#/components/schemas/ScanTasks'
+        - $ref: "#/components/schemas/ScanTasks"
 
     CommitTableRequest:
       type: object
@@ -3623,15 +3600,15 @@ components:
       properties:
         identifier:
           description: Table identifier to update; must be present for CommitTransactionRequest
-          $ref: '#/components/schemas/TableIdentifier'
+          $ref: "#/components/schemas/TableIdentifier"
         requirements:
           type: array
           items:
-            $ref: '#/components/schemas/TableRequirement'
+            $ref: "#/components/schemas/TableRequirement"
         updates:
           type: array
           items:
-            $ref: '#/components/schemas/TableUpdate'
+            $ref: "#/components/schemas/TableUpdate"
 
     CommitViewRequest:
       type: object
@@ -3640,15 +3617,15 @@ components:
       properties:
         identifier:
           description: View identifier to update
-          $ref: '#/components/schemas/TableIdentifier'
+          $ref: "#/components/schemas/TableIdentifier"
         requirements:
           type: array
           items:
-            $ref: '#/components/schemas/ViewRequirement'
+            $ref: "#/components/schemas/ViewRequirement"
         updates:
           type: array
           items:
-            $ref: '#/components/schemas/ViewUpdate'
+            $ref: "#/components/schemas/ViewUpdate"
 
     CommitTransactionRequest:
       type: object
@@ -3659,7 +3636,7 @@ components:
           type: array
           items:
             description: Table commit request; must provide an `identifier`
-            $ref: '#/components/schemas/CommitTableRequest'
+            $ref: "#/components/schemas/CommitTableRequest"
 
     CreateTableRequest:
       type: object
@@ -3672,11 +3649,11 @@ components:
         location:
           type: string
         schema:
-          $ref: '#/components/schemas/Schema'
+          $ref: "#/components/schemas/Schema"
         partition-spec:
-          $ref: '#/components/schemas/PartitionSpec'
+          $ref: "#/components/schemas/PartitionSpec"
         write-order:
-          $ref: '#/components/schemas/SortOrder'
+          $ref: "#/components/schemas/SortOrder"
         stage-create:
           type: boolean
         properties:
@@ -3712,9 +3689,9 @@ components:
         location:
           type: string
         schema:
-          $ref: '#/components/schemas/Schema'
+          $ref: "#/components/schemas/Schema"
         view-version:
-          $ref: '#/components/schemas/ViewVersion'
+          $ref: "#/components/schemas/ViewVersion"
           description: The view version to create, will replace the schema-id sent within the view-version with the id assigned to the provided schema
         properties:
           type: object
@@ -3744,7 +3721,7 @@ components:
         metadata-location:
           type: string
         metadata:
-          $ref: '#/components/schemas/ViewMetadata'
+          $ref: "#/components/schemas/ViewMetadata"
         config:
           type: object
           additionalProperties:
@@ -3770,8 +3747,7 @@ components:
         - urn:ietf:params:oauth:token-type:saml1
         - urn:ietf:params:oauth:token-type:saml2
         - urn:ietf:params:oauth:token-type:jwt
-      description:
-        Token type identifier, from RFC 8693 Section 3
+      description: Token type identifier, from RFC 8693 Section 3
 
 
         See https://datatracker.ietf.org/doc/html/rfc8693#section-3
@@ -3801,16 +3777,14 @@ components:
           type: string
         client_id:
           type: string
-          description:
-            Client ID
+          description: Client ID
 
 
             This can be sent in the request body, but OAuth2 recommends sending it in
             a Basic Authorization header.
         client_secret:
           type: string
-          description:
-            Client secret
+          description: Client secret
 
 
             This can be sent in the request body, but OAuth2 recommends sending it in
@@ -3840,17 +3814,17 @@ components:
         scope:
           type: string
         requested_token_type:
-          $ref: '#/components/schemas/TokenType'
+          $ref: "#/components/schemas/TokenType"
         subject_token:
           type: string
           description: Subject token for token exchange request
         subject_token_type:
-          $ref: '#/components/schemas/TokenType'
+          $ref: "#/components/schemas/TokenType"
         actor_token:
           type: string
           description: Actor token for token exchange request
         actor_token_type:
-          $ref: '#/components/schemas/TokenType'
+          $ref: "#/components/schemas/TokenType"
 
     OAuthTokenRequest:
       deprecated: true
@@ -3858,8 +3832,8 @@ components:
         The `oauth/tokens` endpoint and related schemas are **DEPRECATED for REMOVAL** from this
         spec, see description of the endpoint.
       anyOf:
-        - $ref: '#/components/schemas/OAuthClientCredentialsRequest'
-        - $ref: '#/components/schemas/OAuthTokenExchangeRequest'
+        - $ref: "#/components/schemas/OAuthClientCredentialsRequest"
+        - $ref: "#/components/schemas/OAuthTokenExchangeRequest"
 
     CounterResult:
       type: object
@@ -3891,59 +3865,38 @@ components:
 
     MetricResult:
       anyOf:
-        - $ref: '#/components/schemas/CounterResult'
-        - $ref: '#/components/schemas/TimerResult'
+        - $ref: "#/components/schemas/CounterResult"
+        - $ref: "#/components/schemas/TimerResult"
 
     Metrics:
       type: object
       additionalProperties:
-        $ref: '#/components/schemas/MetricResult'
-      example: {
-        "metrics": {
-          "total-planning-duration": {
-            "count": 1,
-            "time-unit": "nanoseconds",
-            "total-duration": 2644235116
-          },
-          "result-data-files": {
-            "unit": "count",
-            "value": 1,
-          },
-          "result-delete-files": {
-            "unit": "count",
-            "value": 0,
-          },
-          "total-data-manifests": {
-            "unit": "count",
-            "value": 1,
-          },
-          "total-delete-manifests": {
-            "unit": "count",
-            "value": 0,
-          },
-          "scanned-data-manifests": {
-            "unit": "count",
-            "value": 1,
-          },
-          "skipped-data-manifests": {
-            "unit": "count",
-            "value": 0,
-          },
-          "total-file-size-bytes": {
-            "unit": "bytes",
-            "value": 10,
-          },
-          "total-delete-file-size-bytes": {
-            "unit": "bytes",
-            "value": 0,
-          }
+        $ref: "#/components/schemas/MetricResult"
+      example:
+        {
+          "metrics":
+            {
+              "total-planning-duration":
+                {
+                  "count": 1,
+                  "time-unit": "nanoseconds",
+                  "total-duration": 2644235116,
+                },
+              "result-data-files": { "unit": "count", "value": 1 },
+              "result-delete-files": { "unit": "count", "value": 0 },
+              "total-data-manifests": { "unit": "count", "value": 1 },
+              "total-delete-manifests": { "unit": "count", "value": 0 },
+              "scanned-data-manifests": { "unit": "count", "value": 1 },
+              "skipped-data-manifests": { "unit": "count", "value": 0 },
+              "total-file-size-bytes": { "unit": "bytes", "value": 10 },
+              "total-delete-file-size-bytes": { "unit": "bytes", "value": 0 },
+            },
         }
-      }
 
     ReportMetricsRequest:
       anyOf:
-        - $ref: '#/components/schemas/ScanReport'
-        - $ref: '#/components/schemas/CommitReport'
+        - $ref: "#/components/schemas/ScanReport"
+        - $ref: "#/components/schemas/CommitReport"
       required:
         - report-type
       properties:
@@ -3967,7 +3920,7 @@ components:
           type: integer
           format: int64
         filter:
-          $ref: '#/components/schemas/Expression'
+          $ref: "#/components/schemas/Expression"
         schema-id:
           type: integer
         projected-field-ids:
@@ -3979,7 +3932,7 @@ components:
           items:
             type: string
         metrics:
-          $ref: '#/components/schemas/Metrics'
+          $ref: "#/components/schemas/Metrics"
         metadata:
           type: object
           additionalProperties:
@@ -4005,7 +3958,7 @@ components:
         operation:
           type: string
         metrics:
-          $ref: '#/components/schemas/Metrics'
+          $ref: "#/components/schemas/Metrics"
         metadata:
           type: object
           additionalProperties:
@@ -4046,8 +3999,7 @@ components:
       properties:
         access_token:
           type: string
-          description:
-            The access token, for client credentials or token exchange
+          description: The access token, for client credentials or token exchange
         token_type:
           type: string
           enum:
@@ -4061,10 +4013,9 @@ components:
             See https://datatracker.ietf.org/doc/html/rfc6749#section-7.1
         expires_in:
           type: integer
-          description:
-            Lifetime of the access token in seconds for client credentials or token exchange
+          description: Lifetime of the access token in seconds for client credentials or token exchange
         issued_token_type:
-          $ref: '#/components/schemas/TokenType'
+          $ref: "#/components/schemas/TokenType"
         refresh_token:
           type: string
           description: Refresh token for client credentials or token exchange
@@ -4079,15 +4030,16 @@ components:
         - error
       properties:
         error:
-          $ref: '#/components/schemas/ErrorModel'
+          $ref: "#/components/schemas/ErrorModel"
       additionalProperties: false
       example:
         {
-          "error": {
-            "message": "The server does not support this operation",
-            "type": "UnsupportedOperationException",
-            "code": 406
-          }
+          "error":
+            {
+              "message": "The server does not support this operation",
+              "type": "UnsupportedOperationException",
+              "code": 406,
+            },
         }
 
     CreateNamespaceResponse:
@@ -4096,15 +4048,14 @@ components:
         - namespace
       properties:
         namespace:
-          $ref: '#/components/schemas/Namespace'
+          $ref: "#/components/schemas/Namespace"
         properties:
           type: object
           additionalProperties:
             type: string
-          description:
-            Properties stored on the namespace, if supported by the server.
+          description: Properties stored on the namespace, if supported by the server.
           example: { "owner": "Ralph", "created_at": "1452120468" }
-          default: { }
+          default: {}
 
     GetNamespaceResponse:
       type: object
@@ -4112,7 +4063,7 @@ components:
         - namespace
       properties:
         namespace:
-          $ref: '#/components/schemas/Namespace'
+          $ref: "#/components/schemas/Namespace"
         properties:
           type: object
           description:
@@ -4121,31 +4072,31 @@ components:
             If namespace properties are supported, but none are set, it should return an empty object.
           additionalProperties:
             type: string
-          example: { "owner": "Ralph", 'transient_lastDdlTime': '1452120468' }
-          default: { }
+          example: { "owner": "Ralph", "transient_lastDdlTime": "1452120468" }
+          default: {}
           nullable: true
 
     ListTablesResponse:
       type: object
       properties:
         next-page-token:
-          $ref: '#/components/schemas/PageToken'
+          $ref: "#/components/schemas/PageToken"
         identifiers:
           type: array
           uniqueItems: true
           items:
-            $ref: '#/components/schemas/TableIdentifier'
+            $ref: "#/components/schemas/TableIdentifier"
 
     ListNamespacesResponse:
       type: object
       properties:
         next-page-token:
-          $ref: '#/components/schemas/PageToken'
+          $ref: "#/components/schemas/PageToken"
         namespaces:
           type: array
           uniqueItems: true
           items:
-            $ref: '#/components/schemas/Namespace'
+            $ref: "#/components/schemas/Namespace"
 
     UpdateNamespacePropertiesResponse:
       type: object
@@ -4183,7 +4134,7 @@ components:
         metadata-location:
           type: string
         metadata:
-          $ref: '#/components/schemas/TableMetadata'
+          $ref: "#/components/schemas/TableMetadata"
 
     StatisticsFile:
       type: object
@@ -4208,7 +4159,7 @@ components:
         blob-metadata:
           type: array
           items:
-            $ref: '#/components/schemas/BlobMetadata'
+            $ref: "#/components/schemas/BlobMetadata"
 
     BlobMetadata:
       type: object
@@ -4290,7 +4241,7 @@ components:
     UUIDTypeValue:
       type: string
       format: uuid
-      pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+      pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
       maxLength: 36
       minLength: 36
       description:
@@ -4301,20 +4252,17 @@ components:
     DateTypeValue:
       type: string
       format: date
-      description:
-        "Date type values follow the 'YYYY-MM-DD' ISO-8601 standard date format"
+      description: "Date type values follow the 'YYYY-MM-DD' ISO-8601 standard date format"
       example: "2007-12-03"
 
     TimeTypeValue:
       type: string
-      description:
-        "Time type values follow the 'HH:MM:SS.ssssss' ISO-8601 format with microsecond precision"
+      description: "Time type values follow the 'HH:MM:SS.ssssss' ISO-8601 format with microsecond precision"
       example: "22:31:08.123456"
 
     TimestampTypeValue:
       type: string
-      description:
-        "Timestamp type values follow the 'YYYY-MM-DDTHH:MM:SS.ssssss' ISO-8601 format with microsecond precision"
+      description: "Timestamp type values follow the 'YYYY-MM-DDTHH:MM:SS.ssssss' ISO-8601 format with microsecond precision"
       example: "2007-12-03T10:15:30.123456"
 
     TimestampTzTypeValue:
@@ -4326,8 +4274,7 @@ components:
 
     TimestampNanoTypeValue:
       type: string
-      description:
-        "Timestamp_ns type values follow the 'YYYY-MM-DDTHH:MM:SS.sssssssss' ISO-8601 format with nanosecond precision"
+      description: "Timestamp_ns type values follow the 'YYYY-MM-DDTHH:MM:SS.sssssssss' ISO-8601 format with nanosecond precision"
       example: "2007-12-03T10:15:30.123456789"
 
     TimestampTzNanoTypeValue:
@@ -4346,8 +4293,7 @@ components:
 
     BinaryTypeValue:
       type: string
-      description:
-        "Binary type values are stored and serialized as an uppercase hexadecimal string"
+      description: "Binary type values are stored and serialized as an uppercase hexadecimal string"
       example: "78797A"
 
     CountMap:
@@ -4356,18 +4302,14 @@ components:
         keys:
           type: array
           items:
-            $ref: '#/components/schemas/IntegerTypeValue'
+            $ref: "#/components/schemas/IntegerTypeValue"
           description: "List of integer column ids for each corresponding value"
         values:
           type: array
           items:
-            $ref: '#/components/schemas/LongTypeValue'
+            $ref: "#/components/schemas/LongTypeValue"
           description: "List of Long values, matched to 'keys' by index"
-      example:
-        {
-          "keys": [ 1, 2 ],
-          "values": [ 100, 200 ]
-        }
+      example: { "keys": [1, 2], "values": [100, 200] }
 
     ValueMap:
       type: object
@@ -4375,37 +4317,33 @@ components:
         keys:
           type: array
           items:
-            $ref: '#/components/schemas/IntegerTypeValue'
+            $ref: "#/components/schemas/IntegerTypeValue"
           description: "List of integer column ids for each corresponding value"
         values:
           type: array
           items:
-            $ref: '#/components/schemas/PrimitiveTypeValue'
+            $ref: "#/components/schemas/PrimitiveTypeValue"
           description: "List of primitive type values, matched to 'keys' by index"
-      example:
-        {
-          "keys": [ 1, 2 ],
-          "values": [ 100, "test" ]
-        }
+      example: { "keys": [1, 2], "values": [100, "test"] }
 
     PrimitiveTypeValue:
       oneOf:
-        - $ref: '#/components/schemas/BooleanTypeValue'
-        - $ref: '#/components/schemas/IntegerTypeValue'
-        - $ref: '#/components/schemas/LongTypeValue'
-        - $ref: '#/components/schemas/FloatTypeValue'
-        - $ref: '#/components/schemas/DoubleTypeValue'
-        - $ref: '#/components/schemas/DecimalTypeValue'
-        - $ref: '#/components/schemas/StringTypeValue'
-        - $ref: '#/components/schemas/UUIDTypeValue'
-        - $ref: '#/components/schemas/DateTypeValue'
-        - $ref: '#/components/schemas/TimeTypeValue'
-        - $ref: '#/components/schemas/TimestampTypeValue'
-        - $ref: '#/components/schemas/TimestampTzTypeValue'
-        - $ref: '#/components/schemas/TimestampNanoTypeValue'
-        - $ref: '#/components/schemas/TimestampTzNanoTypeValue'
-        - $ref: '#/components/schemas/FixedTypeValue'
-        - $ref: '#/components/schemas/BinaryTypeValue'
+        - $ref: "#/components/schemas/BooleanTypeValue"
+        - $ref: "#/components/schemas/IntegerTypeValue"
+        - $ref: "#/components/schemas/LongTypeValue"
+        - $ref: "#/components/schemas/FloatTypeValue"
+        - $ref: "#/components/schemas/DoubleTypeValue"
+        - $ref: "#/components/schemas/DecimalTypeValue"
+        - $ref: "#/components/schemas/StringTypeValue"
+        - $ref: "#/components/schemas/UUIDTypeValue"
+        - $ref: "#/components/schemas/DateTypeValue"
+        - $ref: "#/components/schemas/TimeTypeValue"
+        - $ref: "#/components/schemas/TimestampTypeValue"
+        - $ref: "#/components/schemas/TimestampTzTypeValue"
+        - $ref: "#/components/schemas/TimestampNanoTypeValue"
+        - $ref: "#/components/schemas/TimestampTzNanoTypeValue"
+        - $ref: "#/components/schemas/FixedTypeValue"
+        - $ref: "#/components/schemas/BinaryTypeValue"
 
     FileFormat:
       type: string
@@ -4419,9 +4357,9 @@ components:
       discriminator:
         propertyName: content
         mapping:
-          data: '#/components/schemas/DataFile'
-          position-deletes: '#/components/schemas/PositionDeleteFile'
-          equality-deletes: '#/components/schemas/EqualityDeleteFile'
+          data: "#/components/schemas/DataFile"
+          position-deletes: "#/components/schemas/PositionDeleteFile"
+          equality-deletes: "#/components/schemas/EqualityDeleteFile"
       type: object
       required:
         - spec-id
@@ -4437,13 +4375,13 @@ components:
         file-path:
           type: string
         file-format:
-          $ref: '#/components/schemas/FileFormat'
+          $ref: "#/components/schemas/FileFormat"
         spec-id:
           type: integer
         partition:
           type: array
           items:
-            $ref: '#/components/schemas/PrimitiveTypeValue'
+            $ref: "#/components/schemas/PrimitiveTypeValue"
           description:
             A list of partition field values ordered based on the fields of
             the partition spec specified by the `spec-id`
@@ -4458,7 +4396,7 @@ components:
           description: "Number of records in the file"
         key-metadata:
           allOf:
-            - $ref: '#/components/schemas/BinaryTypeValue'
+            - $ref: "#/components/schemas/BinaryTypeValue"
           description: "Encryption key metadata blob"
         split-offsets:
           type: array
@@ -4471,7 +4409,7 @@ components:
 
     DataFile:
       allOf:
-        - $ref: '#/components/schemas/ContentFile'
+        - $ref: "#/components/schemas/ContentFile"
       type: object
       required:
         - content
@@ -4485,42 +4423,42 @@ components:
           description: "The first row ID assigned to the first row in the data file"
         column-sizes:
           allOf:
-            - $ref: '#/components/schemas/CountMap'
+            - $ref: "#/components/schemas/CountMap"
           description: "Map of column id to total count, including null and NaN"
         value-counts:
           allOf:
-            - $ref: '#/components/schemas/CountMap'
+            - $ref: "#/components/schemas/CountMap"
           description: "Map of column id to null value count"
         null-value-counts:
           allOf:
-            - $ref: '#/components/schemas/CountMap'
+            - $ref: "#/components/schemas/CountMap"
           description: "Map of column id to null value count"
         nan-value-counts:
           allOf:
-            - $ref: '#/components/schemas/CountMap'
+            - $ref: "#/components/schemas/CountMap"
           description: "Map of column id to number of NaN values in the column"
         lower-bounds:
           allOf:
-            - $ref: '#/components/schemas/ValueMap'
+            - $ref: "#/components/schemas/ValueMap"
           description: "Map of column id to lower bound primitive type values"
         upper-bounds:
           allOf:
-            - $ref: '#/components/schemas/ValueMap'
+            - $ref: "#/components/schemas/ValueMap"
           description: "Map of column id to upper bound primitive type values"
 
     DeleteFile:
       discriminator:
         propertyName: content
         mapping:
-          position-deletes: '#/components/schemas/PositionDeleteFile'
-          equality-deletes: '#/components/schemas/EqualityDeleteFile'
+          position-deletes: "#/components/schemas/PositionDeleteFile"
+          equality-deletes: "#/components/schemas/EqualityDeleteFile"
       oneOf:
-        - $ref: '#/components/schemas/PositionDeleteFile'
-        - $ref: '#/components/schemas/EqualityDeleteFile'
+        - $ref: "#/components/schemas/PositionDeleteFile"
+        - $ref: "#/components/schemas/EqualityDeleteFile"
 
     PositionDeleteFile:
       allOf:
-        - $ref: '#/components/schemas/ContentFile'
+        - $ref: "#/components/schemas/ContentFile"
       required:
         - content
       properties:
@@ -4538,7 +4476,7 @@ components:
 
     EqualityDeleteFile:
       allOf:
-        - $ref: '#/components/schemas/ContentFile'
+        - $ref: "#/components/schemas/ContentFile"
       required:
         - content
       properties:
@@ -4555,19 +4493,17 @@ components:
       type: object
       properties:
         snapshot-id:
-          description:
-            Identifier for the snapshot to scan in a point-in-time scan
+          description: Identifier for the snapshot to scan in a point-in-time scan
           type: integer
           format: int64
         select:
           description: List of selected schema fields
           type: array
           items:
-            $ref: '#/components/schemas/FieldName'
+            $ref: "#/components/schemas/FieldName"
         filter:
-          description:
-            Expression used to filter the table data
-          $ref: '#/components/schemas/Expression'
+          description: Expression used to filter the table data
+          $ref: "#/components/schemas/Expression"
         min-rows-requested:
           description:
             The minimum number of rows requested for the scan. This is used as a hint
@@ -4593,18 +4529,16 @@ components:
           type: integer
           format: int64
         end-snapshot-id:
-          description:
-            Ending snapshot ID for an incremental scan (inclusive).
+          description: Ending snapshot ID for an incremental scan (inclusive).
 
             Required when start-snapshot-id is specified.
           type: integer
           format: int64
         stats-fields:
-          description:
-            List of fields for which the service should send column stats.
+          description: List of fields for which the service should send column stats.
           type: array
           items:
-            $ref: '#/components/schemas/FieldName'
+            $ref: "#/components/schemas/FieldName"
 
     FieldName:
       description:
@@ -4613,14 +4547,14 @@ components:
 
         The nested field name follows these rules
         - Nested struct fields are named by concatenating field names at each
-          struct level using dot (`.`) delimiter, e.g.
-          employer.contact_info.address.zip_code
+        struct level using dot (`.`) delimiter, e.g.
+        employer.contact_info.address.zip_code
         - Nested fields in a map key are named using the keyword `key`, e.g.
-          employee_address_map.key.first_name
+        employee_address_map.key.first_name
         - Nested fields in a map value are named using the keyword `value`,
-          e.g. employee_address_map.value.zip_code
+        e.g. employee_address_map.value.zip_code
         - Nested fields in a list are named using the keyword `element`, e.g.
-          employees.element.first_name
+        employees.element.first_name
       type: string
 
     FetchScanTasksRequest:
@@ -4629,7 +4563,7 @@ components:
         - plan-task
       properties:
         plan-task:
-          $ref: '#/components/schemas/PlanTask'
+          $ref: "#/components/schemas/PlanTask"
 
     PlanTask:
       description:
@@ -4644,7 +4578,7 @@ components:
         - data-file
       properties:
         data-file:
-          $ref: '#/components/schemas/DataFile'
+          $ref: "#/components/schemas/DataFile"
         delete-file-references:
           description: A list of indices in the delete files array (0-based)
           type: array
@@ -4657,26 +4591,25 @@ components:
             If the residual is not present, the client must produce the
             residual or use the original filter.
           allOf:
-            - $ref: '#/components/schemas/Expression'
+            - $ref: "#/components/schemas/Expression"
 
   #############################
   # Reusable Response Objects #
   #############################
   responses:
-
     OAuthTokenResponse:
       description: OAuth2 token response for client credentials or token exchange
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/OAuthTokenResponse'
+            $ref: "#/components/schemas/OAuthTokenResponse"
 
     OAuthErrorResponse:
       description: OAuth2 error response
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/OAuthError'
+            $ref: "#/components/schemas/OAuthError"
 
     BadRequestErrorResponse:
       description:
@@ -4687,14 +4620,16 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/IcebergErrorResponse'
-          example: {
-            "error": {
-              "message": "Malformed request",
-              "type": "BadRequestException",
-              "code": 400
+            $ref: "#/components/schemas/IcebergErrorResponse"
+          example:
+            {
+              "error":
+                {
+                  "message": "Malformed request",
+                  "type": "BadRequestException",
+                  "code": 400,
+                },
             }
-          }
 
     #  Note that this is a representative example response for use as a shorthand in the spec.
     #  The fields `message` and `type` as indicated here are not presently prescriptive.
@@ -4706,14 +4641,16 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/IcebergErrorResponse'
-          example: {
-            "error": {
-              "message": "Not authorized to make this request",
-              "type": "NotAuthorizedException",
-              "code": 401
+            $ref: "#/components/schemas/IcebergErrorResponse"
+          example:
+            {
+              "error":
+                {
+                  "message": "Not authorized to make this request",
+                  "type": "NotAuthorizedException",
+                  "code": 401,
+                },
             }
-          }
 
     #  Note that this is a representative example response for use as a shorthand in the spec.
     #  The fields `message` and `type` as indicated here are not presently prescriptive.
@@ -4722,14 +4659,16 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/IcebergErrorResponse'
-          example: {
-            "error": {
-              "message": "Not authorized to make this request",
-              "type": "NotAuthorizedException",
-              "code": 403
+            $ref: "#/components/schemas/IcebergErrorResponse"
+          example:
+            {
+              "error":
+                {
+                  "message": "Not authorized to make this request",
+                  "type": "NotAuthorizedException",
+                  "code": 403,
+                },
             }
-          }
 
     #  Note that this is a representative example response for use as a shorthand in the spec.
     #  The fields `message` and `type` as indicated here are not presently prescriptive.
@@ -4738,42 +4677,47 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorModel'
-          example: {
-            "error": {
-              "message": "The server does not support this operation",
-              "type": "UnsupportedOperationException",
-              "code": 406
+            $ref: "#/components/schemas/ErrorModel"
+          example:
+            {
+              "error":
+                {
+                  "message": "The server does not support this operation",
+                  "type": "UnsupportedOperationException",
+                  "code": 406,
+                },
             }
-          }
 
     IcebergErrorResponse:
       description: JSON wrapper for all error responses (non-2xx)
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/IcebergErrorResponse'
-          example: {
-            "error": {
-              "message": "The server does not support this operation",
-              "type": "UnsupportedOperationException",
-              "code": 406
-            } }
+            $ref: "#/components/schemas/IcebergErrorResponse"
+          example:
+            {
+              "error":
+                {
+                  "message": "The server does not support this operation",
+                  "type": "UnsupportedOperationException",
+                  "code": 406,
+                },
+            }
 
     CreateNamespaceResponse:
-      description:
-        Represents a successful call to create a namespace.
+      description: Represents a successful call to create a namespace.
         Returns the namespace created, as well as any properties that were stored for the namespace,
         including those the server might have added. Implementations are not required to support namespace
         properties.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/CreateNamespaceResponse'
-          example: {
-            "namespace": ["accounting", "tax"],
-            "properties": { "owner": "Ralph", "created_at": "1452120468" }
-          }
+            $ref: "#/components/schemas/CreateNamespaceResponse"
+          example:
+            {
+              "namespace": ["accounting", "tax"],
+              "properties": { "owner": "Ralph", "created_at": "1452120468" },
+            }
 
     GetNamespaceResponse:
       description:
@@ -4782,31 +4726,31 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/GetNamespaceResponse'
+            $ref: "#/components/schemas/GetNamespaceResponse"
 
     ListTablesResponse:
       description: A list of table identifiers
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ListTablesResponse'
+            $ref: "#/components/schemas/ListTablesResponse"
           examples:
             ListTablesResponseNonEmpty:
-              $ref: '#/components/examples/ListTablesNonEmptyExample'
+              $ref: "#/components/examples/ListTablesNonEmptyExample"
             ListTablesResponseEmpty:
-              $ref: '#/components/examples/ListTablesEmptyExample'
+              $ref: "#/components/examples/ListTablesEmptyExample"
 
     ListNamespacesResponse:
       description: A list of namespaces
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ListNamespacesResponse'
+            $ref: "#/components/schemas/ListNamespacesResponse"
           examples:
             NonEmptyResponse:
-              $ref: '#/components/examples/ListNamespacesNonEmptyExample'
+              $ref: "#/components/examples/ListNamespacesNonEmptyExample"
             EmptyResponse:
-              $ref: '#/components/examples/ListNamespacesEmptyExample'
+              $ref: "#/components/examples/ListNamespacesEmptyExample"
 
     AuthenticationTimeoutResponse:
       description:
@@ -4816,14 +4760,16 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/IcebergErrorResponse'
-          example: {
-            "error": {
-              "message": "Credentials have timed out",
-              "type": "AuthenticationTimeoutException",
-              "code": 419
+            $ref: "#/components/schemas/IcebergErrorResponse"
+          example:
+            {
+              "error":
+                {
+                  "message": "Credentials have timed out",
+                  "type": "AuthenticationTimeoutException",
+                  "code": 419,
+                },
             }
-          }
 
     ServiceUnavailableResponse:
       description:
@@ -4834,14 +4780,16 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/IcebergErrorResponse'
-          example: {
-            "error": {
-              "message": "Slow down",
-              "type": "SlowDownException",
-              "code": 503
+            $ref: "#/components/schemas/IcebergErrorResponse"
+          example:
+            {
+              "error":
+                {
+                  "message": "Slow down",
+                  "type": "SlowDownException",
+                  "code": 503,
+                },
             }
-          }
 
     ServerErrorResponse:
       description:
@@ -4851,129 +4799,120 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/IcebergErrorResponse'
-          example: {
-            "error": {
-              "message": "Internal Server Error",
-              "type": "InternalServerError",
-              "code": 500
+            $ref: "#/components/schemas/IcebergErrorResponse"
+          example:
+            {
+              "error":
+                {
+                  "message": "Internal Server Error",
+                  "type": "InternalServerError",
+                  "code": 500,
+                },
             }
-          }
 
     UpdateNamespacePropertiesResponse:
       description: JSON data response for a synchronous update properties request.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/UpdateNamespacePropertiesResponse'
-          example: {
-            "updated": [ "owner" ],
-            "removed": [ "foo" ],
-            "missing": [ "bar" ]
-          }
+            $ref: "#/components/schemas/UpdateNamespacePropertiesResponse"
+          example:
+            { "updated": ["owner"], "removed": ["foo"], "missing": ["bar"] }
 
     CreateTableResponse:
       description: Table metadata result after creating a table
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/LoadTableResult'
+            $ref: "#/components/schemas/LoadTableResult"
       headers:
         etag:
-          $ref: '#/components/parameters/etag'
+          $ref: "#/components/parameters/etag"
 
     PlanTableScanResponse:
       description: Result of submitting a table scan to plan
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/PlanTableScanResult'
+            $ref: "#/components/schemas/PlanTableScanResult"
 
     FetchPlanningResultResponse:
       description: Result of fetching a submitted scan planning operation
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/FetchPlanningResult'
+            $ref: "#/components/schemas/FetchPlanningResult"
 
     FetchScanTasksResponse:
       description: Result of retrieving additional plan tasks and file scan tasks.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/FetchScanTasksResult'
+            $ref: "#/components/schemas/FetchScanTasksResult"
 
     LoadTableResponse:
       description: Table metadata result when loading a table
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/LoadTableResult'
+            $ref: "#/components/schemas/LoadTableResult"
       headers:
         etag:
-          $ref: '#/components/parameters/etag'
+          $ref: "#/components/parameters/etag"
 
     LoadViewResponse:
       description: View metadata result when loading a view
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/LoadViewResult'
+            $ref: "#/components/schemas/LoadViewResult"
 
     CommitTableResponse:
-      description:
-        Response used when a table is successfully updated.
+      description: Response used when a table is successfully updated.
 
         The table metadata JSON is returned in the metadata field. The corresponding file location of table metadata must be returned in the metadata-location field. Clients can check whether metadata has changed by comparing metadata locations.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/CommitTableResponse'
+            $ref: "#/components/schemas/CommitTableResponse"
       headers:
         etag:
-          $ref: '#/components/parameters/etag'
+          $ref: "#/components/parameters/etag"
 
     LoadCredentialsResponse:
       description: Table credentials result when loading credentials for a table
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/LoadCredentialsResponse'
+            $ref: "#/components/schemas/LoadCredentialsResponse"
 
   #######################################
   # Common examples of different values #
   #######################################
   examples:
-
     ListTablesEmptyExample:
       summary: An empty list for a namespace with no tables
-      value: {
-        "identifiers": [ ]
-      }
+      value: { "identifiers": [] }
 
     ListNamespacesEmptyExample:
       summary: An empty list of namespaces
-      value: {
-        "namespaces": [ ]
-      }
+      value: { "namespaces": [] }
 
     ListNamespacesNonEmptyExample:
       summary: A non-empty list of namespaces
-      value: {
-        "namespaces": [
-          ["accounting", "tax"],
-          ["accounting", "credits"]
-        ]
-      }
+      value:
+        { "namespaces": [["accounting", "tax"], ["accounting", "credits"]] }
 
     ListTablesNonEmptyExample:
       summary: A non-empty list of table identifiers
-      value: {
-        "identifiers": [
-          { "namespace": ["accounting", "tax"], "name": "paid" },
-          { "namespace": ["accounting", "tax"], "name": "owed" }
-        ]
-      }
+      value:
+        {
+          "identifiers":
+            [
+              { "namespace": ["accounting", "tax"], "name": "paid" },
+              { "namespace": ["accounting", "tax"], "name": "owed" },
+            ],
+        }
 
     MultipartNamespaceAsPathVariable:
       summary: A multi-part namespace, as represented in a path parameter
@@ -4985,133 +4924,152 @@ components:
 
     NamespaceAlreadyExistsError:
       summary: The requested namespace already exists
-      value: {
-        "error": {
-          "message": "The given namespace already exists",
-          "type": "AlreadyExistsException",
-          "code": 409
+      value:
+        {
+          "error":
+            {
+              "message": "The given namespace already exists",
+              "type": "AlreadyExistsException",
+              "code": 409,
+            },
         }
-      }
 
     NoSuchPlanIdError:
       summary: The plan id does not exist
-      value: {
-        "error": {
-          "message": "The plan id does not exist",
-          "type": "NoSuchPlanIdException",
-          "code": 404
+      value:
+        {
+          "error":
+            {
+              "message": "The plan id does not exist",
+              "type": "NoSuchPlanIdException",
+              "code": 404,
+            },
         }
-      }
 
     NoSuchPlanTaskError:
       summary: The plan task does not exist
-      value: {
-        "error": {
-          "message": "The plan task does not exist",
-          "type": "NoSuchPlanTaskException",
-          "code": 404
+      value:
+        {
+          "error":
+            {
+              "message": "The plan task does not exist",
+              "type": "NoSuchPlanTaskException",
+              "code": 404,
+            },
         }
-      }
 
     NoSuchTableError:
       summary: The requested table does not exist
-      value: {
-        "error": {
-          "message": "The given table does not exist",
-          "type": "NoSuchTableException",
-          "code": 404
+      value:
+        {
+          "error":
+            {
+              "message": "The given table does not exist",
+              "type": "NoSuchTableException",
+              "code": 404,
+            },
         }
-      }
 
     NoSuchViewError:
       summary: The requested view does not exist
-      value: {
-        "error": {
-          "message": "The given view does not exist",
-          "type": "NoSuchViewException",
-          "code": 404
+      value:
+        {
+          "error":
+            {
+              "message": "The given view does not exist",
+              "type": "NoSuchViewException",
+              "code": 404,
+            },
         }
-      }
 
     NoSuchNamespaceError:
       summary: The requested namespace does not exist
-      value: {
-        "error": {
-          "message": "The given namespace does not exist",
-          "type": "NoSuchNamespaceException",
-          "code": 404
+      value:
+        {
+          "error":
+            {
+              "message": "The given namespace does not exist",
+              "type": "NoSuchNamespaceException",
+              "code": 404,
+            },
         }
-      }
 
     NamespaceNotEmptyError:
       summary: The requested namespace is not empty
-      value: {
-        "error": {
-          "message": "The given namespace is not empty",
-          "type": "NamespaceNotEmptyException",
-          "code": 409
+      value:
+        {
+          "error":
+            {
+              "message": "The given namespace is not empty",
+              "type": "NamespaceNotEmptyException",
+              "code": 409,
+            },
         }
-      }
 
     RenameTableSameNamespace:
       summary: Rename a table in the same namespace
-      value: {
-        "source": { "namespace": ["accounting", "tax"], "name": "paid" },
-        "destination": { "namespace": ["accounting", "tax"], "name": "owed" }
-      }
+      value:
+        {
+          "source": { "namespace": ["accounting", "tax"], "name": "paid" },
+          "destination": { "namespace": ["accounting", "tax"], "name": "owed" },
+        }
 
     RenameViewSameNamespace:
       summary: Rename a view in the same namespace
-      value: {
-        "source": { "namespace": [ "accounting", "tax" ], "name": "paid-view" },
-        "destination": { "namespace": [ "accounting", "tax" ], "name": "owed-view" }
-      }
+      value:
+        {
+          "source": { "namespace": ["accounting", "tax"], "name": "paid-view" },
+          "destination":
+            { "namespace": ["accounting", "tax"], "name": "owed-view" },
+        }
 
     TableAlreadyExistsError:
       summary: The requested table identifier already exists
-      value: {
-        "error": {
-          "message": "The given table already exists",
-          "type": "AlreadyExistsException",
-          "code": 409
+      value:
+        {
+          "error":
+            {
+              "message": "The given table already exists",
+              "type": "AlreadyExistsException",
+              "code": 409,
+            },
         }
-      }
 
     ViewAlreadyExistsError:
       summary: The requested view identifier already exists
-      value: {
-        "error": {
-          "message": "The given view already exists",
-          "type": "AlreadyExistsException",
-          "code": 409
+      value:
+        {
+          "error":
+            {
+              "message": "The given view already exists",
+              "type": "AlreadyExistsException",
+              "code": 409,
+            },
         }
-      }
 
     # This is an example response and is not meant to be prescriptive regarding the message or type.
     UnprocessableEntityDuplicateKey:
       summary:
         The request body either has the same key multiple times in what should be a map with unique keys
         or the request body has keys in two or more fields which should be disjoint sets.
-      value: {
-        "error": {
-          "message": "The request cannot be processed as there is a key present multiple times",
-          "type": "UnprocessableEntityException",
-          "code": 422
+      value:
+        {
+          "error":
+            {
+              "message": "The request cannot be processed as there is a key present multiple times",
+              "type": "UnprocessableEntityException",
+              "code": 422,
+            },
         }
-      }
 
     UpdateAndRemoveNamespacePropertiesRequest:
       summary: An update namespace properties request with both properties to remove and properties to upsert.
-      value: {
-        "removals": [ "foo", "bar" ],
-        "updates": { "owner": "Raoul" }
-      }
+      value: { "removals": ["foo", "bar"], "updates": { "owner": "Raoul" } }
 
   securitySchemes:
     OAuth2:
       type: oauth2
-      description:
-        This scheme is used for OAuth2 authorization.
+      description: This scheme is used for OAuth2 authorization.
 
 
         For unauthorized requests, services should return an appropriate 401 or

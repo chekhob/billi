@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.acme.entity.NamespaceObject;
-import org.acme.repo.NamespaceRepository;
+import org.acme.entity.repo.NamespaceRepository;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @RequestScoped

@@ -1,7 +1,10 @@
 package org.acme.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +19,12 @@ import org.hibernate.type.SqlTypes;
 public class NamespaceObject {
 
   @Id
+  @SequenceGenerator(name = "namespace_seq", sequenceName = "namespace_seq", allocationSize = 1)
+  // @GeneratedValue(strategy = GenerationType.SEQUENCE, generator =
+  // "namespace_seq")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Integer id;
+
   @UuidGenerator(style = Style.TIME)
   private UUID uuid;
 
@@ -28,6 +37,19 @@ public class NamespaceObject {
   private Map<String, String> properties;
 
   public NamespaceObject() {
+  }
+
+  // public Integer getId() {
+  // return id;
+  // }
+
+  // public void setId(){
+  // this.id = id;
+  // }
+  public String getName() {
+    // TODO: Make this work for nested namespaces like accounting.finance /
+    // accounting.customers
+    return namespace.getLast();
   }
 
   public UUID getUuid() {

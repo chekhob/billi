@@ -69,20 +69,14 @@ public class MetadataRequests extends S3Connector {
   // @GET
   // @Path("download/{objectKey}")
   // @Produces(MediaType.APPLICATION_OCTET_STREAM)
-  public Response downloadFile(String objectKey) {
+  public ResponseBytes<GetObjectResponse> downloadFile(String objectKey) {
     // ResponseInputStream objectS3 = s3.getObject(
     // buildGetRequest(objectKey));
 
     // return objectS3.response().toString;
     ResponseBytes<GetObjectResponse> objectBytes = s3.getObjectAsBytes(
         buildGetRequest(objectKey));
-    Response.ResponseBuilder response = Response.ok(
-        objectBytes.asByteArray());
-    response.header(
-        "Content-Disposition",
-        "attachment;filename=" + objectKey);
-    response.header("Content-Type", objectBytes.response().contentType());
-    return response.build();
+    return objectBytes;
   }
 
   // @GET
