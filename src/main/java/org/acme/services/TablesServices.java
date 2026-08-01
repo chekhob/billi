@@ -2,11 +2,9 @@ package org.acme.services;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.acme.dto.CreateTableRequest;
@@ -150,9 +148,12 @@ public class TablesServices {
     IcebergMetadata metadata = createMetadataJSON(
         namespace,
         createTableRequest);
+    // TODO: this is related to the objectKey thing, like I have to edit this later
+    // since it is handled differently in createMetadataJSON
+    namespace = namespace + '/' + createTableRequest.getName();
 
     String fileName = generateMetaFileName(0);
-
+    // TODO: create the objectKey and pass it up everywhere to avoid confusion
     PutObjectResponse putObjectResponse = putMetadataFile(
         fileName,
         namespace,
@@ -160,7 +161,7 @@ public class TablesServices {
 
     if (putObjectResponse != null) {
       // the object eky is just the file name?;
-      String objectKey = fileName;
+      String objectKey = namespace + '/' + fileName;
       ResponseBytes<GetObjectResponse> objectBytes = metadataRequests.downloadFile(objectKey);
 
       Map<String, Object> tableMetadata;
@@ -170,7 +171,6 @@ public class TablesServices {
         // objectMapper.readValue(objectBytes.asByteArray(), TableMetadata.class);
         tableMetadata = objectMapper.readValue(objectBytes.asUtf8String(), new TypeReference<Map<String, Object>>() {
         });
-        // TODO: Add create table here
         createTableObject(ns_object, metadata);
         // TODO: Add create snapshot here
       } catch (JsonProcessingException e) {

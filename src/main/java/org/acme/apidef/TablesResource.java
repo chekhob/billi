@@ -1,8 +1,6 @@
 package org.acme.apidef;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -14,23 +12,16 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 
-import java.io.IOException;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.acme.context.RequestContext;
+import org.acme.dto.CommitTableRequest;
 import org.acme.dto.CreateTableRequest;
 import org.acme.dto.ErrorResponse;
 import org.acme.dto.FileObject;
-import org.acme.dto.IcebergMetadata;
-import org.acme.dto.TableMetadata;
-import org.acme.dto.TableMetadataResponse;
 import org.acme.entity.NamespaceObject;
 import org.acme.services.MetadataRequests;
 import org.acme.services.TablesServices;
@@ -103,11 +94,11 @@ public class TablesResource {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response createTable(
       CreateTableRequest createTableRequest) throws JsonProcessingException {
-    requestContext.getNamespace();
+    NamespaceObject ns_object = requestContext.getNamespace();
     // if (ns_object == null) {
     // throw noSuchNamespaceException(namespace);
     // }
-    return tablesServices.createMetadataFile(requestContext.getNamespace(), createTableRequest);
+    return tablesServices.createMetadataFile(ns_object, createTableRequest);
   }
 
   @Path("{tb_name}")
@@ -115,9 +106,7 @@ public class TablesResource {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getTableDetails(
       @PathParam("tb_name") String table) {
-
     NamespaceObject object = requestContext.getNamespace();
-
     try {
       List<FileObject> metadata = metadataRequests.getMetadata(
           object.getName(),
@@ -129,5 +118,15 @@ public class TablesResource {
       noSuchTableException table_exception = new noSuchTableException(table, object.getName());
       throw table_exception;
     }
+  }
+
+  @Path("{tb_name}")
+  @POST
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response updateTable(@PathParam("tb_name") String table, CommitTableRequest commitTableRequest) {
+    NamespaceObject ns_object = requestContext.getNamespace();
+    // tablesServices.updateMetadata
+    return Response.ok().build();
+
   }
 }

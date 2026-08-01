@@ -15,11 +15,6 @@ import org.acme.services.MetadataRequests;
 import org.acme.services.NamespaceEntityService;
 import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 
-//class Namespace {
-//    String name;
-//    String location;
-//    ArrayList<Table> tableList;
-//}
 @Path("/namespaces")
 public class NamespaceResources {
 
