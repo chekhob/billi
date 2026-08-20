@@ -1,5 +1,6 @@
 package org.acme.dto;
 
+import java.util.List;
 import java.util.UUID;
 
 public class IcebergMetadata {
@@ -34,6 +35,7 @@ public class IcebergMetadata {
   private TableProperties properties;
   private Boolean stageCreate;
   private Long currentSnapshotId = (long) -1;
+  private List<SnapshotCommit> snapshots;
 
   public IcebergMetadata() {
     // no-args constructor for Jackson
@@ -56,7 +58,8 @@ public class IcebergMetadata {
       WriteOrder writeOrder,
       TableProperties properties,
       Boolean stageCreate,
-      Long currentSnapshotId) {
+      Long currentSnapshotId,
+      List<SnapshotCommit> snapshots) {
     this.formatVersion = formatVersion;
     this.tableUuid = uuid;
     this.lastSequenceNumber = lastSequenceNumber;
@@ -76,6 +79,7 @@ public class IcebergMetadata {
     if (currentSnapshotId != null) {
       this.currentSnapshotId = currentSnapshotId;
     }
+    this.snapshots=snapshots;
   }
 
   public Integer getFormatVersion() {
@@ -212,6 +216,14 @@ public class IcebergMetadata {
 
   public void setCurrentSnapshotId(Long currentSnapshotId) {
     this.currentSnapshotId = currentSnapshotId;
+  }
+
+  public List<SnapshotCommit> getSnapshots() {
+    return snapshots;
+  }
+
+  public void setSnapshots(List<SnapshotCommit> snapshots) {
+    this.snapshots = snapshots;
   }
 }
 

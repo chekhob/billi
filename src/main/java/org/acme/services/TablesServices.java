@@ -1,24 +1,34 @@
 package org.acme.services;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.acme.dto.AssertRefSnapshotId;
+import org.acme.dto.AssertTableUUID;
+import org.acme.dto.CommitTableRequest;
 import org.acme.dto.CreateTableRequest;
+import org.acme.dto.FileObject;
 import org.acme.dto.IcebergMetadata;
 import org.acme.dto.SchemaField;
 import org.acme.dto.SortOrder;
 import org.acme.dto.SortOrderField;
 import org.acme.dto.TableMetadataResponse;
+import org.acme.dto.TableRequirement;
+import org.acme.dto.TableUpdate;
 import org.acme.entity.NamespaceObject;
 import org.acme.entity.TableObject;
+import org.acme.exceptions.InvalidRequirementException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import software.amazon.awssdk.core.ResponseBytes;
@@ -38,6 +48,9 @@ public class TablesServices {
 
   @Inject
   TableEntityService tableEntityService;
+
+  @Inject
+  TableUpdateDispatcher updateDispatcher;
 
   @ConfigProperty(name = "iceberg.format.version")
   Integer FORMAT_VERSION_ICEBERG;
@@ -106,7 +119,8 @@ public class TablesServices {
         createTableRequest.getWriteOrder(),
         createTableRequest.getProperties(),
         createTableRequest.getStageCreate(),
-        DEFAULT_SNAPSHOT_ID);
+        DEFAULT_SNAPSHOT_ID,
+        new ArrayList<>());
 
     return metadata;
   }
@@ -114,10 +128,8 @@ public class TablesServices {
   public String generateMetaFileName(int version) {
 
     String uuidString = java.util.UUID.randomUUID().toString();
-    if (version == 0) {
-      String prefix = "00000";
+      String prefix = String.format("%05d", version);
       uuidString = prefix + '-' + uuidString + METADATA_FILE_SUFFIX;
-    }
 
     return uuidString;
   }
@@ -160,8 +172,8 @@ public class TablesServices {
         metadata);
 
     if (putObjectResponse != null) {
-      // the object eky is just the file name?;
-      String objectKey = namespace + '/' + fileName;
+      String objectKey = namespace + "/metadata/" + fileName;
+
       ResponseBytes<GetObjectResponse> objectBytes = metadataRequests.downloadFile(objectKey);
 
       Map<String, Object> tableMetadata;
@@ -184,8 +196,9 @@ public class TablesServices {
       // TableMetadataResponse metadataResponse = new
       // TableMetadataResponse(tableMetadata.getLocation() + "/" + fileName,
       // tableMetadata);
+      // TODO: replace warehouse with the name for applicaiton properties
       TableMetadataResponse metadataResponse = new TableMetadataResponse(
-          (String) tableMetadata.get("location") + "/" + fileName, tableMetadata);
+          "s3://" + "warehouse/"+ objectKey, tableMetadata);
 
       // TableMetadataResponse metadataResponse =
       // tablesServices.createMetadataFile(namespace, createTableRequest);
@@ -211,15 +224,86 @@ public class TablesServices {
     return Response.serverError().build();
   }
 
-  // we will still create the file, I think so just need to extend the above
-  // method
-  // But we need to interpret this new object also so maybe like updateTable? and
-  // call create metadata from there?
-  // TODO: Add updateTable method for the path given below
+  public Response processCommit(
+      NamespaceObject ns_object,
+      String tableName,
+      CommitTableRequest commitTableRequest) throws IOException {
+    List<TableRequirement> requirements = commitTableRequest.getRequirements();
+    List<TableUpdate>  updates = commitTableRequest.getUpdates();
+    if (requirements == null || requirements.isEmpty()) {
+      // TODO: process updates
+      return Response.ok().build();
+    }
 
+    IcebergMetadata currentMetadata = loadLatestMetadata(ns_object.getName(), tableName);
+    if (currentMetadata == null) {
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(Map.of("error", "Table does not exist", "table", tableName))
+          .build();
+    }
+
+    validateRequirements(currentMetadata, requirements);
+
+    updateDispatcher.applyAll(currentMetadata, updates);
+    // TODO: upload updated metadata file
+
+    // generateMetaFileName(version)
+    // createTableObject(ns_object, updatedMetadata);
+    //
+
+    return Response.ok().entity(currentMetadata).build();
+  }
+
+  private IcebergMetadata loadLatestMetadata(String namespace, String table) throws IOException {
+      // TODO: this first API should be replaced with with a DB call
+    List<FileObject> files = metadataRequests.getMetadata(namespace, table);
+    if (files == null || files.isEmpty()) {
+      return null;
+    }
+    FileObject latest = files.get(files.size() - 1);
+    ResponseBytes<GetObjectResponse> objectBytes = metadataRequests.downloadFile(latest.getObjectKey());
+    return objectMapper.readValue(objectBytes.asByteArray(), IcebergMetadata.class);
+  }
+
+  private void validateRequirements(
+      IcebergMetadata currentMetadata,
+      List<TableRequirement> requirements) {
+    for (TableRequirement requirement : requirements) {
+      switch (requirement) {
+          case AssertTableUUID a -> {
+          if (!currentMetadata.getTableUuid().toString().equals(a.uuid())) {
+            throw new InvalidRequirementException(
+                "Table UUID mismatch: expected " + a.uuid() + " but was "
+                    + currentMetadata.getTableUuid(),
+                Response.Status.CONFLICT);
+          }
+        }
+        case AssertRefSnapshotId b -> {
+          Long currentSnapshotId = currentMetadata.getCurrentSnapshotId();
+          if (b.snapshotId() == null) {
+            // asserting the ref does not exist
+            if (currentSnapshotId != null && currentSnapshotId.longValue() != DEFAULT_SNAPSHOT_ID.longValue()) {
+              throw new InvalidRequirementException(
+                  "Ref " + b.ref() + " exists with snapshot-id " + currentSnapshotId
+                      + ", expected no ref",
+                  Response.Status.CONFLICT);
+            }
+          } else if (currentSnapshotId == null || currentSnapshotId.longValue() != b.snapshotId().longValue()) {
+            throw new InvalidRequirementException(
+                "Ref " + b.ref() + " snapshot-id mismatch: expected " + b.snapshotId() + " but was "
+                    + currentSnapshotId,
+                Response.Status.CONFLICT);
+          }
+        }
+        default -> {
+          throw new InvalidRequirementException(
+              "Unsupported requirement type: " + requirement.getClass(),
+              Response.Status.BAD_REQUEST);
+        }
+      }
+    }
+  }
 }
-
-// POST /v1/namespaces/iceberg_catalog_test_f8b262d6/tables/test_dml
 // {
 // "requirements": [
 // {

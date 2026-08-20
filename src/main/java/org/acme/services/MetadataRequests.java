@@ -27,6 +27,9 @@ public class MetadataRequests extends S3Connector {
   @Inject
   S3Client s3;
 
+  @Inject
+  ObjectMapper mapper;
+
   public Response createNewNamespaceFolder(String folderName) {
     Response.ResponseBuilder response = Response.ok();
 
@@ -38,7 +41,7 @@ public class MetadataRequests extends S3Connector {
       String folderName,
       IcebergMetadata icebergMetadata) {
     S3FormData formData = new S3FormData();
-    formData.filename = folderName + '/' + fileName;
+    formData.filename = folderName + "/metadata/" + fileName;
     try {
       formData.mimetype = new MimeType("application/json");
     } catch (MimeTypeParseException e) {
@@ -46,7 +49,7 @@ public class MetadataRequests extends S3Connector {
     }
 
     try {
-      ObjectMapper mapper = new ObjectMapper();
+      // ObjectMapper mapper = new ObjectMapper();
       formData.json = mapper.writeValueAsString(icebergMetadata);
     } catch (JsonProcessingException e) {
       System.err.println(e.fillInStackTrace());

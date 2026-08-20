@@ -26,6 +26,8 @@ import org.acme.entity.NamespaceObject;
 import org.acme.services.MetadataRequests;
 import org.acme.services.TablesServices;
 import org.acme.services.NamespaceEntityService;
+import org.acme.exceptions.InvalidRequirementException;
+import org.acme.exceptions.InvalidUpdateException;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
@@ -83,6 +85,32 @@ public class TablesResource {
         .build();
   }
 
+  @ServerExceptionMapper
+  public Response mapException(InvalidRequirementException e) {
+    return Response.status(e.code)
+        .type(MediaType.APPLICATION_JSON)
+        .entity(
+            new ErrorResponse(
+                    "Invalid Requirement: " + e.element +
+                    ": " +
+                    e.getMessage(),
+                Arrays.stream(e.getStackTrace()).toList().toString()))
+        .build();
+  }
+
+  @ServerExceptionMapper
+  public Response mapException(InvalidUpdateException e) {
+    return Response.status(e.code)
+        .type(MediaType.APPLICATION_JSON)
+        .entity(
+            new ErrorResponse(
+                "Invalid Update: " + e.element +
+                ": " +
+                e.getMessage(),
+                Arrays.stream(e.getStackTrace()).toList().toString()))
+        .build();
+  }
+
   @GET
   public Response getTableList(@PathParam("ns_name") String namespace) {
     // TODO: Ideally call helper function from Tables class instead
@@ -123,10 +151,9 @@ public class TablesResource {
   @Path("{tb_name}")
   @POST
   @Produces(MediaType.APPLICATION_JSON)
-  public Response updateTable(@PathParam("tb_name") String table, CommitTableRequest commitTableRequest) {
+  public Response updateTable(@PathParam("tb_name") String table, CommitTableRequest commitTableRequest)
+      throws java.io.IOException {
     NamespaceObject ns_object = requestContext.getNamespace();
-    // tablesServices.updateMetadata
-    return Response.ok().build();
-
+    return tablesServices.processCommit(ns_object, table, commitTableRequest);
   }
 }
