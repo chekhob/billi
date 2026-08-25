@@ -38,9 +38,6 @@ nb-configuration.xml
 
 # Local environment
 .env
-application.properties
-*/application.properties
-src/main/resources
 .backblaze_key
 
 # Plugin directory

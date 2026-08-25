@@ -1,10 +1,8 @@
 package org.acme.services;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
@@ -13,6 +11,8 @@ import org.acme.dto.IcebergMetadata;
 import org.acme.dto.SnapshotCommit;
 import org.acme.dto.TableUpdate;
 import org.acme.dto.UpdateAddSnapshot;
+import org.acme.dto.UpdateRemoveSnapshotRef;
+import org.acme.dto.UpdateRemoveSnapshots;
 import org.acme.dto.UpdateSetSnapshotRef;
 import org.acme.exceptions.InvalidUpdateException;
 
@@ -23,23 +23,36 @@ public class SnapshotApplier implements TableUpdateApplier {
 
   @Override
   public Set<String> actions() {
-    // return Set.of("add-snapshot", "set-snapshot-ref");
-    return Arrays.stream(ActionType.values()).map(ActionType::getAction).collect(Collectors.toSet());
+    return Set.of(
+        ActionType.ADD_SNAPSHOT.getAction(),
+        ActionType.SET_SNAPSHOT_REF.getAction(),
+        ActionType.REMOVE_SNAPSHOT_REF.getAction(),
+        ActionType.REMOVE_SNAPSHOTS.getAction());
   }
 
   @Override
   public void apply(IcebergMetadata metadata, TableUpdate update) {
     switch (update) {
       case UpdateAddSnapshot(SnapshotCommit snapshot) -> {
-        List<SnapshotCommit> existing = metadata.getSnapshots();
-        if (existing == null) {
+        List<SnapshotCommit> existingSnapshotCommits = metadata.getSnapshots();
+        if (existingSnapshotCommits == null) {
           List<SnapshotCommit> snapshots = new ArrayList<>();
           snapshots.add(snapshot);
           metadata.setSnapshots(snapshots);
         }
+        else{
+            existingSnapshotCommits.add(snapshot);
+            metadata.setSnapshots(existingSnapshotCommits);
+        }
       }
       case UpdateSetSnapshotRef(String refName, Long snapshotId, String type) -> {
         metadata.setCurrentSnapshotId(snapshotId);
+      }
+      case UpdateRemoveSnapshotRef(String refName) -> {
+        // TODO: refs model not yet implemented; ref removal transformation deferred
+      }
+      case UpdateRemoveSnapshots(List<Long> snapshotIds) -> {
+        // TODO: snapshots removal transformation deferred
       }
       default -> throw new InvalidUpdateException(
           "Unsupported snapshot update: " + update.action(),
