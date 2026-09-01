@@ -42,7 +42,6 @@ public class SnapshotApplier implements TableUpdateApplier {
         }
         else{
             existingSnapshotCommits.add(snapshot);
-            metadata.setSnapshots(existingSnapshotCommits);
         }
       }
       case UpdateSetSnapshotRef(String refName, Long snapshotId, String type) -> {
