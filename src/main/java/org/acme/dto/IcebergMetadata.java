@@ -5,6 +5,8 @@ import java.util.UUID;
 
 public class IcebergMetadata {
 
+  public static final long DEFAULT_SNAPSHOT_ID = -1L;
+
   // "table-uuid": "8cb26f5a-3b4a-4ade-aa30-9aaca6f931bb",
   // "last-sequence-number": 0,
   // "last-updated-ms": 1781701408273,
@@ -34,7 +36,7 @@ public class IcebergMetadata {
   private WriteOrder writeOrder;
   private TableProperties properties;
   private Boolean stageCreate;
-  private Long currentSnapshotId = (long) -1;
+  private Long currentSnapshotId = DEFAULT_SNAPSHOT_ID;
   private List<SnapshotCommit> snapshots;
 
   public IcebergMetadata() {

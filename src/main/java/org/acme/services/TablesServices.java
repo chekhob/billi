@@ -9,8 +9,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.acme.dto.AssertRefSnapshotId;
-import org.acme.dto.AssertTableUUID;
 import org.acme.dto.CommitTableRequest;
 import org.acme.dto.CreateTableRequest;
 import org.acme.dto.FileObject;
@@ -23,7 +21,6 @@ import org.acme.dto.TableRequirement;
 import org.acme.dto.TableUpdate;
 import org.acme.entity.NamespaceObject;
 import org.acme.entity.TableObject;
-import org.acme.exceptions.InvalidRequirementException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -269,38 +266,7 @@ public class TablesServices {
       IcebergMetadata currentMetadata,
       List<TableRequirement> requirements) {
     for (TableRequirement requirement : requirements) {
-      switch (requirement) {
-          case AssertTableUUID a -> {
-          if (!currentMetadata.getTableUuid().toString().equals(a.uuid())) {
-            throw new InvalidRequirementException(
-                "Table UUID mismatch: expected " + a.uuid() + " but was "
-                    + currentMetadata.getTableUuid(),
-                Response.Status.CONFLICT);
-          }
-        }
-        case AssertRefSnapshotId b -> {
-          Long currentSnapshotId = currentMetadata.getCurrentSnapshotId();
-          if (b.snapshotId() == null) {
-            // asserting the ref does not exist
-            if (currentSnapshotId != null && currentSnapshotId.longValue() != DEFAULT_SNAPSHOT_ID.longValue()) {
-              throw new InvalidRequirementException(
-                  "Ref " + b.ref() + " exists with snapshot-id " + currentSnapshotId
-                      + ", expected no ref",
-                  Response.Status.CONFLICT);
-            }
-          } else if (currentSnapshotId == null || currentSnapshotId.longValue() != b.snapshotId().longValue()) {
-            throw new InvalidRequirementException(
-                "Ref " + b.ref() + " snapshot-id mismatch: expected " + b.snapshotId() + " but was "
-                    + currentSnapshotId,
-                Response.Status.CONFLICT);
-          }
-        }
-        default -> {
-          throw new InvalidRequirementException(
-              "Unsupported requirement type: " + requirement.getClass(),
-              Response.Status.BAD_REQUEST);
-        }
-      }
+      requirement.validate(currentMetadata);
     }
   }
 }

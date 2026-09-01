@@ -9,4 +9,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = AssertRefSnapshotId.class, name = "assert-ref-snapshot-id")
 })
 public interface TableRequirement {
+
+  void validate(IcebergMetadata current);
 }
