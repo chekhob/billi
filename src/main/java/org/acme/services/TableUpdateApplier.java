@@ -3,7 +3,7 @@ package org.acme.services;
 import java.util.Set;
 
 import org.acme.dto.IcebergMetadata;
-import org.acme.dto.TableUpdate;
+import org.acme.dto.update.TableUpdate;
 
 public interface TableUpdateApplier {
 

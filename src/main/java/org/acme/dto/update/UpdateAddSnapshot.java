@@ -1,6 +1,7 @@
-package org.acme.dto;
+package org.acme.dto.update;
 
-import java.util.Map;
+import org.acme.dto.SnapshotCommit;
+
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("add-snapshot")

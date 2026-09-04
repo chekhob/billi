@@ -10,7 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 
 import org.acme.dto.IcebergMetadata;
-import org.acme.dto.TableUpdate;
+import org.acme.dto.update.TableUpdate;
 import org.acme.exceptions.InvalidUpdateException;
 
 @ApplicationScoped

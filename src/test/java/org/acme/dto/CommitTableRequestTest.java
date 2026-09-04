@@ -12,6 +12,10 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import org.acme.dto.requirement.AssertRefSnapshotId;
+import org.acme.dto.requirement.AssertTableUUID;
+import org.acme.dto.requirement.TableRequirement;
+
 import java.util.List;
 
 class CommitTableRequestTest {

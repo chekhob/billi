@@ -9,11 +9,11 @@ import jakarta.ws.rs.core.Response;
 
 import org.acme.dto.IcebergMetadata;
 import org.acme.dto.SnapshotCommit;
-import org.acme.dto.TableUpdate;
-import org.acme.dto.UpdateAddSnapshot;
-import org.acme.dto.UpdateRemoveSnapshotRef;
-import org.acme.dto.UpdateRemoveSnapshots;
-import org.acme.dto.UpdateSetSnapshotRef;
+import org.acme.dto.update.TableUpdate;
+import org.acme.dto.update.UpdateAddSnapshot;
+import org.acme.dto.update.UpdateRemoveSnapshotRef;
+import org.acme.dto.update.UpdateRemoveSnapshots;
+import org.acme.dto.update.UpdateSetSnapshotRef;
 import org.acme.exceptions.InvalidUpdateException;
 
 import org.acme.enums.ActionType;

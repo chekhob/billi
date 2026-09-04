@@ -1,4 +1,4 @@
-package org.acme.dto;
+package org.acme.dto.update;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

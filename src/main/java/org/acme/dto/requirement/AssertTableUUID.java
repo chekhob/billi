@@ -1,10 +1,11 @@
-package org.acme.dto;
+package org.acme.dto.requirement;
+
+import org.acme.dto.IcebergMetadata;
+import org.acme.exceptions.InvalidRequirementException;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import jakarta.ws.rs.core.Response;
-
-import org.acme.exceptions.InvalidRequirementException;
 
 @JsonTypeName("assert-table-uuid")
 public record AssertTableUUID(String uuid) implements TableRequirement {

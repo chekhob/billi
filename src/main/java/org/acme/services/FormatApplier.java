@@ -7,10 +7,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Response;
 
 import org.acme.dto.IcebergMetadata;
-import org.acme.dto.TableUpdate;
-import org.acme.dto.UpdateAssignUUID;
-import org.acme.dto.UpdateSetLocation;
-import org.acme.dto.UpdateUpgradeFormatVersion;
+import org.acme.dto.update.TableUpdate;
+import org.acme.dto.update.UpdateAssignUUID;
+import org.acme.dto.update.UpdateSetLocation;
+import org.acme.dto.update.UpdateUpgradeFormatVersion;
 import org.acme.enums.ActionType;
 import org.acme.exceptions.InvalidUpdateException;
 

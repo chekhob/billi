@@ -2,6 +2,9 @@ package org.acme.dto;
 
 import java.util.List;
 
+import org.acme.dto.requirement.TableRequirement;
+import org.acme.dto.update.TableUpdate;
+
 public class CommitTableRequest {
   private List<TableRequirement> requirements;
   private List<TableUpdate> updates;

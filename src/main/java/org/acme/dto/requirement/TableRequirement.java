@@ -1,4 +1,6 @@
-package org.acme.dto;
+package org.acme.dto.requirement;
+
+import org.acme.dto.IcebergMetadata;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
