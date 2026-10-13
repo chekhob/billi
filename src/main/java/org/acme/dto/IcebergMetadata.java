@@ -100,7 +100,7 @@ public class IcebergMetadata {
     this.tableUuid = uuid;
   }
 
-  public Long getLastSequenceNumber() {
+  public long getLastSequenceNumber() {
     return lastSequenceNumber;
   }
 

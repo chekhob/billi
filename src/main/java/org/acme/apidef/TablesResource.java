@@ -136,15 +136,14 @@ public class TablesResource {
       @PathParam("tb_name") String table) {
     NamespaceObject object = requestContext.getNamespace();
     try {
-      List<FileObject> metadata = metadataRequests.getMetadata(
+      List<FileObject> metadata = metadataRequests.getMetadataList(
           object.getName(),
           table);
 
       return Response.ok(metadata).build();
     } catch (Exception e) {
       e.fillInStackTrace();
-      noSuchTableException table_exception = new noSuchTableException(table, object.getName());
-      throw table_exception;
+        throw new noSuchTableException(table, object.getName());
     }
   }
 

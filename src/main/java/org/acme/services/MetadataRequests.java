@@ -7,6 +7,7 @@ import jakarta.activation.MimeTypeParseException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,13 +62,7 @@ public class MetadataRequests extends S3Connector {
   }
 
   public ResponseBytes<GetObjectResponse> downloadFile(String objectKey) {
-    // ResponseInputStream objectS3 = s3.getObject(
-    // buildGetRequest(objectKey));
-    // return objectS3.response().toString;
-
-    ResponseBytes<GetObjectResponse> objectBytes = s3.getObjectAsBytes(
-        buildGetRequest(objectKey));
-    return objectBytes;
+    return s3.getObjectAsBytes(buildGetRequest(objectKey));
   }
 
   public List<FileObject> listFiles() {
@@ -85,7 +80,7 @@ public class MetadataRequests extends S3Connector {
         .collect(Collectors.toList());
   }
 
-  public List<FileObject> getMetadata(String namespace, String table) {
+  public List<FileObject> getMetadataList(String namespace, String table) {
     String prefix = namespace.concat('/' + table + "/metadata");
     ListObjectsRequest listRequest = ListObjectsRequest.builder()
         .bucket(bucketName)

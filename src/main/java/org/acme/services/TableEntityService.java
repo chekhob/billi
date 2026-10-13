@@ -19,20 +19,26 @@ public class TableEntityService {
         return tableRepository.findById(tableId);
     }
 
+//    @Transactional
+//    public TableObject findByTable(List<String> table) {
+//        return tableRepository.findByTable(table);
+//    }
+
     @Transactional
-    public TableObject findByTable(List<String> table) {
-        return tableRepository.findByTable(table);
+    public TableObject findByName(String name, List<String> namespace) {
+        return tableRepository.findByName(name, namespace);
     }
 
     @Transactional
-    public TableObject findByName(String name) {
-        return tableRepository.findByName(name);
-    }
-
-    @Transactional
-    public TableObject createTable(TableObject tableObject) {
+    public void createTable(TableObject tableObject) {
         tableRepository.persist(tableObject);
-        return tableObject;
+    }
+
+    @Transactional
+    public void updateSnapshotRef(Long updatedSnapshotId, UUID tableUUID){
+        TableObject tableObject = findById(tableUUID);
+        tableObject.setCurrentSnapshotId(updatedSnapshotId);
+        tableRepository.persist(tableObject);
     }
 
     @Transactional

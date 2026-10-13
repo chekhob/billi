@@ -57,6 +57,34 @@ class CommitTableRequestTest {
     }
 
     @Test
+    void requirementAccessorReturnsRequestedSubtype() throws Exception {
+        String json = """
+                {
+                  "requirements": [
+                    { "type": "assert-table-uuid", "uuid": "22ab6f4e-5f16-4777-bedf-70d8a2845f15" },
+                    { "type": "assert-ref-snapshot-id", "ref": "main", "snapshot-id": null }
+                  ]
+                }
+                """;
+
+        CommitTableRequest request = objectMapper.readValue(json, CommitTableRequest.class);
+
+        AssertTableUUID uuidReq = request.requirement(AssertTableUUID.class);
+        assertEquals("22ab6f4e-5f16-4777-bedf-70d8a2845f15", uuidReq.uuid());
+
+        AssertRefSnapshotId refReq = request.requirement(AssertRefSnapshotId.class);
+        assertEquals("main", refReq.ref());
+        assertNull(refReq.snapshotId());
+    }
+
+    @Test
+    void requirementAccessorReturnsNullWhenAbsent() throws Exception {
+        CommitTableRequest request = objectMapper.readValue("{}", CommitTableRequest.class);
+
+        assertNull(request.requirement(AssertTableUUID.class));
+    }
+
+    @Test
     void deserializeNonNullSnapshotId() throws Exception {
         String json = """
                 {

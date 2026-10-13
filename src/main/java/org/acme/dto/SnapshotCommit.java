@@ -1,7 +1,10 @@
 package org.acme.dto;
 
+import jakarta.enterprise.context.RequestScoped;
+
 import java.util.Map;
 
+@RequestScoped
 public class SnapshotCommit {
   private Integer sequenceNumber;
   private Long snapshotId;

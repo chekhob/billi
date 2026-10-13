@@ -21,6 +21,17 @@ public class CommitTableRequest {
     return requirements;
   }
 
+  public <T extends TableRequirement> T requirement(Class<T> type) {
+    if (requirements == null) {
+      return null;
+    }
+    return requirements.stream()
+        .filter(type::isInstance)
+        .map(type::cast)
+        .findFirst()
+        .orElse(null);
+  }
+
   public void setRequirements(List<TableRequirement> requirements) {
     this.requirements = requirements;
   }

@@ -1,10 +1,7 @@
 package org.acme.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.util.UUID;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.annotations.UuidGenerator.Style;
@@ -17,8 +14,9 @@ public class TableObject {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
 
-  @UuidGenerator(style = Style.TIME)
   private UUID uuid;
+
+  private String name;
 
   private String location;
 
@@ -30,7 +28,10 @@ public class TableObject {
 
   private long currentSnapshotId;
 
-  private UUID namespaceId;
+  @ManyToOne
+  @JoinColumn(name = "namespace_id", referencedColumnName = "uuid")
+  private NamespaceObject namespace;
+
 
   // @JdbcTypeCode(SqlTypes.JSON)
   // private Map<String, String> properties;
@@ -94,12 +95,20 @@ public class TableObject {
     this.currentSnapshotId = currentSnapshotId;
   }
 
-  public UUID getNamespaceId() {
-    return namespaceId;
+  public NamespaceObject getNamespace() {
+    return namespace;
   }
 
-  public void setNamespaceId(UUID namespaceId) {
-    this.namespaceId = namespaceId;
+  public void setNamespace(NamespaceObject namespace) {
+    this.namespace = namespace;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   // public Map<String, String> getProperties() {

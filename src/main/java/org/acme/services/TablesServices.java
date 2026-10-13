@@ -1,31 +1,27 @@
 package org.acme.services;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.acme.dto.CommitTableRequest;
-import org.acme.dto.CreateTableRequest;
-import org.acme.dto.FileObject;
-import org.acme.dto.IcebergMetadata;
-import org.acme.dto.SchemaField;
-import org.acme.dto.SortOrder;
-import org.acme.dto.SortOrderField;
-import org.acme.dto.TableMetadataResponse;
+import org.acme.dto.*;
+import org.acme.dto.requirement.AssertRefSnapshotId;
+import org.acme.dto.requirement.AssertTableUUID;
 import org.acme.dto.requirement.TableRequirement;
 import org.acme.dto.update.TableUpdate;
+import org.acme.dto.update.UpdateAddSnapshot;
+import org.acme.dto.update.UpdateSetSnapshotRef;
 import org.acme.entity.NamespaceObject;
+import org.acme.entity.SnapshotEntity;
 import org.acme.entity.TableObject;
+import org.acme.util.S3Utils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import software.amazon.awssdk.core.ResponseBytes;
@@ -41,6 +37,9 @@ public class TablesServices {
   MetadataRequests metadataRequests;
 
   @Inject
+  S3Utils s3Utils;
+
+  @Inject
   ObjectMapper objectMapper;
 
   @Inject
@@ -49,28 +48,31 @@ public class TablesServices {
   @Inject
   TableUpdateDispatcher updateDispatcher;
 
+  @Inject
+  SnapshotEntityService snapshotEntityService;
+
+  //Snapshot
+  @Inject
+  SnapshotCommit snapshotCommit;
+
   @ConfigProperty(name = "iceberg.format.version")
   Integer FORMAT_VERSION_ICEBERG;
 
   @ConfigProperty(name = "iceberg.initial.spec-id")
   Integer INITIAL_SPEC_ID;
 
-  private static Long DEFAULT_SNAPSHOT_ID = (long) -1;
+    private static final Logger LOG = Logger.getLogger(TablesServices.class);
 
-  private static Long newTableSequenceNumber = 0L;
-  private static Integer LAST_PARITION_ID = 1000;
-  private static String METADATA_FILE_SUFFIX = ".metadata.json";
-
-  private static final Logger LOG = Logger.getLogger(TablesServices.class);
-
-  public TableObject createTableObject(NamespaceObject ns_object, IcebergMetadata metadata) {
+  public void createTableObject(NamespaceObject ns_object, IcebergMetadata metadata, String tableName) {
     TableObject tableObject = new TableObject();
-    tableObject.setNamespaceId(ns_object.getUuid());
+    tableObject.setUUID(metadata.getTableUuid());
+    tableObject.setName(tableName);
+    tableObject.setNamespace(ns_object);
     tableObject.setLocation(metadata.getLocation());
     tableObject.setLastColumnId(metadata.getLastColumnId());
     tableObject.setCurrentSchemaId(metadata.getCurrentSchemaId());
     tableObject.setCurrentSnapshotId(metadata.getCurrentSnapshotId());
-    return tableEntityService.createTable(tableObject);
+    tableEntityService.createTable(tableObject);
   }
 
   public IcebergMetadata createMetadataJSON(
@@ -99,24 +101,27 @@ public class TablesServices {
 
     LOG.info("Current Schema ID: " + currentSchemaId);
 
-    IcebergMetadata metadata = new IcebergMetadata(
+      Integer LAST_PARITION_ID = 1000;
+      Long DEFAULT_SNAPSHOT_ID = (long) -1;
+      Long newTableSequenceNumber = 0L;
+      IcebergMetadata metadata = new IcebergMetadata(
         FORMAT_VERSION_ICEBERG,
         java.util.UUID.randomUUID(),
-        newTableSequenceNumber,
+              newTableSequenceNumber,
         System.currentTimeMillis(),
         currentSchemaId,
         lastColumnId,
         namespaceLocation,
         createTableRequest.getSchema(),
         createTableRequest.getPartitionSpec(),
-        LAST_PARITION_ID,
+              LAST_PARITION_ID,
         INITIAL_SPEC_ID,
         sortOrder.getOrderId(),
         sortOrderList,
         createTableRequest.getWriteOrder(),
         createTableRequest.getProperties(),
         createTableRequest.getStageCreate(),
-        DEFAULT_SNAPSHOT_ID,
+              DEFAULT_SNAPSHOT_ID,
         new ArrayList<>());
 
     return metadata;
@@ -126,6 +131,7 @@ public class TablesServices {
 
     String uuidString = java.util.UUID.randomUUID().toString();
       String prefix = String.format("%05d", version);
+      String METADATA_FILE_SUFFIX = ".metadata.json";
       uuidString = prefix + '-' + uuidString + METADATA_FILE_SUFFIX;
 
     return uuidString;
@@ -159,29 +165,33 @@ public class TablesServices {
         createTableRequest);
     // TODO: this is related to the objectKey thing, like I have to edit this later
     // since it is handled differently in createMetadataJSON
-    namespace = namespace + '/' + createTableRequest.getName();
+    String filePath = namespace + '/' + createTableRequest.getName();
 
     String fileName = generateMetaFileName(0);
     // TODO: create the objectKey and pass it up everywhere to avoid confusion
     PutObjectResponse putObjectResponse = putMetadataFile(
         fileName,
-        namespace,
+        filePath,
         metadata);
-
     if (putObjectResponse != null) {
       String objectKey = namespace + "/metadata/" + fileName;
 
       ResponseBytes<GetObjectResponse> objectBytes = metadataRequests.downloadFile(objectKey);
+      String metadataLocation = "s3://" + "warehouse/"+ objectKey;
 
       Map<String, Object> tableMetadata;
+
 
       try {
         // Table Metadata tableMetadata =
         // objectMapper.readValue(objectBytes.asByteArray(), TableMetadata.class);
+        // TODO: make the typecasting to iceberg-metadata into an explicit step
         tableMetadata = objectMapper.readValue(objectBytes.asUtf8String(), new TypeReference<Map<String, Object>>() {
         });
-        createTableObject(ns_object, metadata);
-        // TODO: Add create snapshot here
+        createTableObject(ns_object, metadata, createTableRequest.getName());
+
+        snapshotEntityService.createSnapshotEntry(metadata, metadataLocation);
+
       } catch (JsonProcessingException e) {
         LOG.error("Failed to parse metadata from S3 object: " + objectKey, e);
         throw e;
@@ -193,9 +203,9 @@ public class TablesServices {
       // TableMetadataResponse metadataResponse = new
       // TableMetadataResponse(tableMetadata.getLocation() + "/" + fileName,
       // tableMetadata);
-      // TODO: replace warehouse with the name for applicaiton properties
+      // TODO: replace warehouse with the name for application properties
       TableMetadataResponse metadataResponse = new TableMetadataResponse(
-          "s3://" + "warehouse/"+ objectKey, tableMetadata);
+          metadataLocation, tableMetadata);
 
       // TableMetadataResponse metadataResponse =
       // tablesServices.createMetadataFile(namespace, createTableRequest);
@@ -229,37 +239,145 @@ public class TablesServices {
     List<TableUpdate>  updates = commitTableRequest.getUpdates();
     if (requirements == null || requirements.isEmpty()) {
       // TODO: process updates
+      // why do I have this here? Is this a leetcode question?
       return Response.ok().build();
     }
+//    DONE: Replace the below with a call to snapshot Table in DB
+    UUID tableUuid = UUID.fromString(commitTableRequest.requirement(AssertTableUUID.class).uuid());
+    Long snapshotId = commitTableRequest.requirement(AssertRefSnapshotId.class).snapshotId();
 
-    IcebergMetadata currentMetadata = loadLatestMetadata(ns_object.getName(), tableName);
+    IcebergMetadata currentMetadata = loadMetadataFile(snapshotId, tableUuid);
+
     if (currentMetadata == null) {
       return Response.status(Response.Status.NOT_FOUND)
           .entity(Map.of("error", "Table does not exist", "table", tableName))
           .build();
     }
-
     validateRequirements(currentMetadata, requirements);
-
     updateDispatcher.applyAll(currentMetadata, updates);
-    // TODO: upload updated metadata file
 
-    // generateMetaFileName(version)
-    // createTableObject(ns_object, updatedMetadata);
-    //
+    // TRAIL: The file is getting saved to the wrong directory ns/metadata - should be - ns/table/metadata
+    // TODO: Check if all the correct attributes are there in the newer version
+    String previousFileName = getMetadataFileName(snapshotId, tableUuid);
+     String fileName = generateMetaFileName( Integer.parseInt(previousFileName.split("-")[0]) + 1);
+     // TODO: Refactor this into much cleaner code
+    PutObjectResponse putObjectResponse = putMetadataFile(
+            fileName,
+            ns_object.getName() + "/" + tableName ,
+            currentMetadata);
+    if (putObjectResponse != null) {
+      String objectKey = ns_object.getName() + "/" + tableName + "/metadata/" + fileName;
 
-    return Response.ok().entity(currentMetadata).build();
+      LOG.info("ObjectKey:" + objectKey);
+      ResponseBytes<GetObjectResponse> objectBytes = metadataRequests.downloadFile(objectKey);
+      String metadataLocation = "s3://" + "warehouse/"+ objectKey;
+
+      Map<String, Object> tableMetadata;
+      try {
+//         TableMetadata tableMetadata =
+//         objectMapper.readValue(objectBytes.asByteArray(), TableMetadata.class);
+        // TODO: make the typecasting to iceberg-metadata into an explicit step
+        tableMetadata = objectMapper.readValue(objectBytes.asUtf8String(), new TypeReference<Map<String, Object>>() {
+        });
+
+
+        Optional<TableUpdate> setSnapshotRef = updates.stream().filter(e -> e.action() == "set-snapshot-ref").findAny();
+
+        if(setSnapshotRef.isPresent()) {
+          tableEntityService.updateSnapshotRef(currentMetadata.getCurrentSnapshotId(), tableUuid);
+        }
+
+        snapshotEntityService.createSnapshotEntry(currentMetadata, metadataLocation);
+
+      } catch (JsonProcessingException e) {
+        LOG.error("Failed to parse metadata from S3 object: " + objectKey, e);
+        throw e;
+      } catch (IOException e) {
+        LOG.error("I/O error reading metadata bytes for: " + objectKey, e);
+        throw new RuntimeException("Failed to read metadata: " + objectKey, e);
+      }
+
+      // TableMetadataResponse metadataResponse = new
+      // TableMetadataResponse(tableMetadata.getLocation() + "/" + fileName,
+      // tableMetadata);
+      // TODO: replace warehouse with the name for application properties
+      TableMetadataResponse metadataResponse = new TableMetadataResponse(
+              metadataLocation, tableMetadata);
+
+      // TableMetadataResponse metadataResponse =
+      // tablesServices.createMetadataFile(namespace, createTableRequest);
+      Response.ResponseBuilder response = Response.ok(
+              metadataResponse);
+      response.header(
+              "Content-Disposition",
+              "attachment;filename=" + fileName);
+      response.header("Content-Type", objectBytes.response().contentType());
+
+      try {
+        // Object data = fileData.toString();
+        LOG.info(objectMapper.writeValueAsString(response));
+        LOG.info(objectBytes.asUtf8String());
+      } catch (Exception e) {
+        LOG.error(e.getMessage());
+        if (e.getClass() == JsonProcessingException.class) {
+          LOG.error("TRUE \n\n\n TRUE");
+        }
+      }
+      return response.build();
+    }
+    return Response.serverError().build();
+
+//     snapshotEntityService.createSnapshotEntry(currentMetadata);
+
+
+//    return Response.ok().entity(currentMetadata).build();
   }
 
   private IcebergMetadata loadLatestMetadata(String namespace, String table) throws IOException {
-      // TODO: this first API should be replaced with with a DB call
-    List<FileObject> files = metadataRequests.getMetadata(namespace, table);
-    if (files == null || files.isEmpty()) {
-      return null;
+      // TODO: replace the params with List<String> namespace above when we start supporting that
+    List<String> namespaceName = new ArrayList<>();
+    namespaceName.add(namespace);
+    TableObject tableObject = tableEntityService.findByName(table, namespaceName);
+
+    SnapshotEntity snapshot = snapshotEntityService.getSnapshotDetails(tableObject.getCurrentSnapshotId(),tableObject.getUuid());
+
+    ResponseBytes<GetObjectResponse> objectBytes;
+    if(snapshot.getMetadataLocation() != null){
+      String objectKey = s3Utils.toObjectKey(snapshot.getMetadataLocation());
+      LOG.info("Object Key : "+ objectKey);
+      objectBytes = metadataRequests.downloadFile(objectKey);
     }
-    FileObject latest = files.get(files.size() - 1);
-    ResponseBytes<GetObjectResponse> objectBytes = metadataRequests.downloadFile(latest.getObjectKey());
+    else {
+      List<FileObject> files = metadataRequests.getMetadataList(namespace, table);
+      if (files == null || files.isEmpty()) {
+        return null;
+      }
+      FileObject latest = files.getLast();
+      LOG.info("Object Key : "+ latest.getObjectKey());
+      objectBytes = metadataRequests.downloadFile(latest.getObjectKey());
+    }
     return objectMapper.readValue(objectBytes.asByteArray(), IcebergMetadata.class);
+  }
+
+  private IcebergMetadata loadMetadataFile(Long snapshotId, UUID tableUUID) throws IOException{
+    SnapshotEntity snapshotEntity = snapshotEntityService.getSnapshotDetails(snapshotId, tableUUID);
+    ResponseBytes<GetObjectResponse> objectBytes;
+
+    if(snapshotEntity.getMetadataLocation() != null){
+      String objectKey = s3Utils.toObjectKey(snapshotEntity.getMetadataLocation());
+      LOG.info("Object Key : "+ objectKey);
+      objectBytes = metadataRequests.downloadFile(objectKey);
+
+    return objectMapper.readValue(objectBytes.asByteArray(), IcebergMetadata.class);
+    }
+    return null;
+  }
+
+  private String getMetadataFileName(Long snapshotId, UUID tableUUID){
+    SnapshotEntity snapshotEntity = snapshotEntityService.getSnapshotDetails(snapshotId, tableUUID);
+
+    String[] dir = snapshotEntity.getMetadataLocation().split("/");
+    return dir[dir.length-1];
   }
 
   private void validateRequirements(
